@@ -47,17 +47,32 @@ class Simulator():
     def __init__(self, players):
         print('Hearts engine initlised')
 
-        self.hands = deal_hands(players)
+        self.hands = deal_hands(players)  # all cards
+        self.current_hands = self.hands  # only cards left
+        self.players = players
 
         # List of what cards the model holds
-        self.hearts = []  # id of 0
-        self.clubs = []  # id of 1
-        self.spades = []  # id of 2
-        self.diamonds = []  # id of 3
+        self.hearts = 0
+        self.clubs = 1
+        self.spades = 2
+        self.diamonds = 3
+
+    def load_algorithms(self, algorithms):
+        assert algorithms.__len__() == self.players  # Make sure right number is entered
+        self.algs = algorithms  # These will be the models
 
     def reset(self):
         # Reset the game. Need to pass back initinal observation
         pass
+
+    def init_state(self, player):
+        # Can choose any card... but choosing a suit is harder.
+        choice = self.algs[player].choose_first_card(self.current_hands[player])
+        return choice
+
+    def gen_state(self, player):
+        state = 0
+        return state
 
     def step(self, action):
         # Step in direction of action.

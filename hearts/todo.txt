@@ -1,0 +1,3 @@
+TODO:
+    - Fix algorithm so that it can play a card from another suit if it runs out (Push through global card values)
+    - Create reward function / scoring

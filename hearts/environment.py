@@ -38,11 +38,6 @@ def deal_hands(players=4):
     return hands
 
 
-def reduce_hand(hand, suit):
-    # Reduce hand to only that suit
-    return hand[suit]
-
-
 class Simulator():
     def __init__(self, players):
         print('Hearts engine initlised')

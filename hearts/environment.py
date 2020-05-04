@@ -47,9 +47,14 @@ class Simulator():
     def __init__(self, players):
         print('Hearts engine initlised')
 
+        # CONSTANTS
         self.hands = deal_hands(players)  # all cards
-        self.current_hands = self.hands  # only cards left
         self.players = players
+
+        #Variables
+        self.current_hands = self.hands  # only cards left
+        self.played = []  # Cards played this round
+        self.suit = 0  # What suit?
 
         # List of what cards the model holds
         self.hearts = 0
@@ -68,17 +73,31 @@ class Simulator():
     def init_state(self, player):
         # Can choose any card... but choosing a suit is harder.
         suit, card = self.algs[player].choose_first_card(self.current_hands[player])
+        self.played = [card]
+        self.suit = suit
         return suit, card
 
-    def gen_state(self, played, turn, suit):
+    def gen_state(self, turn):
         # Played is cards played, turn is player's turn
-        num_cards = len(played)
-        highest_card = max(played)
-        cards = self.current_hands[turn, suit]
+        num_cards = len(self.played)
+        highest_card = max(self.played)
+        cards = self.current_hands[turn, self.suit]
         return (num_cards, highest_card, cards)
 
-    def step(self, action):
+    def choose(self, turn, state):
+        # Choose what card to play from the state
+        return self.algs[turn].think(state)
+
+    def step(self, turn, action):
         # Step in direction of action.
         # Return new observation, reward, done or not and debug controls
-        pass
+
+
+
+        new_s = 0
+        reward = 1000.0
+        done = False
+        debug = [0.2]
+
+        return reward, done
 

@@ -66,9 +66,9 @@ class Simulator():
         assert algorithms.__len__() == self.players  # Make sure right number is entered
         self.algs = algorithms  # These will be the models
 
-    def reset(self):
-        # Reset the game. Need to pass back initinal observation
-        pass
+    def print_cards(self):
+        for player in range(self.players):
+            print('Player', player, "'s hand\n", self.current_hands[player])
 
     def init_state(self, player):
         # Can choose any card... but choosing a suit is harder.
@@ -90,14 +90,7 @@ class Simulator():
 
     def step(self, turn, action):
         # Step in direction of action.
-        # Return new observation, reward, done or not and debug controls
-
-
-
-        new_s = 0
-        reward = 1000.0
-        done = False
-        debug = [0.2]
-
-        return reward, done
+        self.current_hands[turn, self.suit, action] = 0  # Use the card
+        self.played.append(action)
+        print('$--- CARDS Played', self.played)
 

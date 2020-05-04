@@ -18,17 +18,12 @@ class Lowest():
 
     def choose_first_card(self, cards):
         # What card should you play first?
-        print('Cards:', cards)
+        print('Cards:\n', cards)
         card = 0
         for i in range(14):
-            print(i)
-            if np.argmax(cards[:, i]) > 0:
+            #print(i, '==>', np.argmax(cards[:, i]))
+            if np.sum(cards[:, i]) > 0:
                 # There is a card
-                card = (13*np.argmax(cards[:, i])) + i
-                print('Choose', np.argmax(cards[:, i]), i)
-                print('which is', card)
-                break
-        if card == 0:
-            raise('Ummmmm')
-        return card
-
+                print('Choose', (np.argmax(cards[:, i]), i))
+                return np.argmax(cards[:, i]), i
+        raise('Ummmmm')

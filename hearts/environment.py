@@ -34,7 +34,7 @@ def deal_hands(players=4):
             else:
                 # Diamond
                 hands[player, 3, card-13-13-13] = 1
-        print('Player', player, "'s hand", hands[player])
+        print('Player', player, "'s hand\n", hands[player])
     return hands
 
 
@@ -67,12 +67,15 @@ class Simulator():
 
     def init_state(self, player):
         # Can choose any card... but choosing a suit is harder.
-        choice = self.algs[player].choose_first_card(self.current_hands[player])
-        return choice
+        suit, card = self.algs[player].choose_first_card(self.current_hands[player])
+        return suit, card
 
-    def gen_state(self, player):
-        state = 0
-        return state
+    def gen_state(self, played, turn, suit):
+        # Played is cards played, turn is player's turn
+        num_cards = len(played)
+        highest_card = max(played)
+        cards = self.current_hands[turn, suit]
+        return (num_cards, highest_card, cards)
 
     def step(self, action):
         # Step in direction of action.

@@ -7,7 +7,7 @@
 
 # This is the same irrespective of how the agent is built
 
-# observation = (card's played, highest card played, ace?, one?, two?, three?..., queen(12)?, king(13)?)
+# observation = (card's played, highest card played, my cards)
 
 import numpy as np
 
@@ -37,14 +37,17 @@ def deal_hands(players=4):
         print('Player', player, "'s hand", hands[player])
     return hands
 
+
 def reduce_hand(hand, suit):
     # Reduce hand to only that suit
-    reduced = hand[suit]
+    return hand[suit]
 
 
-class Game():
-    def __init__(self, hand):
+class Simulator():
+    def __init__(self, players):
         print('Hearts engine initlised')
+
+        self.hands = deal_hands(players)
 
         # List of what cards the model holds
         self.hearts = []  # id of 0

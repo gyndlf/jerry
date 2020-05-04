@@ -37,9 +37,13 @@ def deal_hands(players=4):
         print('Player', player, "'s hand", hands[player])
     return hands
 
+def reduce_hand(hand, suit):
+    # Reduce hand to only that suit
+    reduced = hand[suit]
+
 
 class Game():
-    def __init__(self):
+    def __init__(self, hand):
         print('Hearts engine initlised')
 
         # List of what cards the model holds
@@ -47,6 +51,7 @@ class Game():
         self.clubs = []  # id of 1
         self.spades = []  # id of 2
         self.diamonds = []  # id of 3
+
     def reset(self):
         # Reset the game. Need to pass back initinal observation
         pass

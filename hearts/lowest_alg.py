@@ -7,13 +7,24 @@ class Lowest():
     def __init__(self):
         self.info = 'Algorithm that takes a hand and chooses the lowest card'
 
-    def think(self, observation):
+    def think(self, mode, observation):
         # Takes inputs, returns action
-        # observation = (num cards played, highest card played, my cards)
-        cards = observation[2]  # only 1 suit
-        choice = np.argmax(cards)  # array of 1's and 0's
+        assert mode == 'limited'
+
+        suit, card = np.where(observation[0,:,:]==1)
+        suit = int(suit)
+        card = int(card)
+        print(suit, card)
+
+        sel = np.argmax(observation[1, suit])  # array of 1's and 0's
+        if sel == 0:
+            choice = self.choose_sub_card(observation[1])
+            # There is none of that suit
+            # Then choose worst card
+        else:
+            choice = (suit, sel)
         print('*---LOWEST---*')
-        print('Of cards', cards, 'choosing lowest card of', choice)
+        print('Choosing lowest card of', choice)
         return choice
 
     def choose_first_card(self, cards):
@@ -24,6 +35,16 @@ class Lowest():
             #print(i, '==>', np.argmax(cards[:, i]))
             if np.sum(cards[:, i]) > 0:
                 # There is a card
-                print('Choose', (np.argmax(cards[:, i]), i))
+                print('(Best card) Choose', (np.argmax(cards[:, i]), i))
                 return np.argmax(cards[:, i]), i
         raise('Ummmmm')
+
+    def choose_sub_card(self, cards):
+        # What card do you throw away? (Worst card?)
+        card = 0
+        for i in range(13,-1,-1):  # just go backwards
+            # print(i, '==>', np.argmax(cards[:, i]))
+            if np.sum(cards[:, i]) > 0:
+                # There is a card
+                print('(Worst card) Choose', (np.argmax(cards[:, i]), i))
+                return np.argmax(cards[:, i]), i

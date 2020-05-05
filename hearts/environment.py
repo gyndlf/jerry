@@ -39,12 +39,18 @@ def deal_hands(players=4):
 
 
 class Simulator():
-    def __init__(self, players):
+    def __init__(self, players, observations='limited'):
         print('Hearts engine initlised')
 
         # CONSTANTS
         self.hands = deal_hands(players)  # all cards
         self.players = players
+        assert observations == 'limited' or 'expanded' or 'full' or 'super'
+        self.mode = observations  # Higher observations convey more infomation, but need a more complex machine
+        # limited = (index, suit, card) index=0 played cards (only highest card shown), index=1 cards available
+        # expanded = (index, suit, card) index=0 all played cards (card 0 is required suit), index=1 cards available
+        # full = (index, suit, card) index=0 all played cards, index=1 cards available, index=2 all cards played (game)
+        # super = (index, suit, card) same as full, but index=2,3,4 is cards other plays have played
 
         #Variables
         self.current_hands = self.hands  # only cards left
@@ -68,24 +74,39 @@ class Simulator():
     def init_state(self, player):
         # Can choose any card... but choosing a suit is harder.
         suit, card = self.algs[player].choose_first_card(self.current_hands[player])
-        self.played = [card]
+        self.played = []
         self.suit = suit
         return suit, card
 
     def gen_state(self, turn):
         # Played is cards played, turn is player's turn
+        # create observation
         num_cards = len(self.played)
-        highest_card = max(self.played)
-        cards = self.current_hands[turn, self.suit]
-        return (num_cards, highest_card, cards)
+        highest_card = 0
+        for play in self.played:  # Get the highest card of the right suit
+            if play[0] == self.suit and play[1] > highest_card:
+                highest_card = play[1]
+        if self.mode is 'limited':
+            # limited = (index, suit, card) index=0 played cards (only highest card shown), index=1 cards available
+            o = np.zeros((2, 4, 14))
+            print('Obseration shape', o.shape)
+            o[0,self.suit,highest_card] = 1  # only one hot largest card
+            o[1, :, :] = self.current_hands[turn]  # add the player's hand
+            return o
+        else:
+            raise('Mode not implemeted')
 
     def choose(self, turn, state):
         # Choose what card to play from the state
-        return self.algs[turn].think(state)
+        return self.algs[turn].think(self.mode, state)
 
     def step(self, turn, action):
         # Step in direction of action.
-        self.current_hands[turn, self.suit, action] = 0  # Use the card
+        # action = (suit, card)
+        self.current_hands[turn, action[0], action[1]] = 0  # Use the card
         self.played.append(action)
         print('$--- CARDS Played', self.played)
+
+    def find_winner(self):
+        pass
 

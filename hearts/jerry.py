@@ -24,9 +24,9 @@ logger.debug('Hi')
 
 lowest = Lowest()
 
-players = 4
+players = 3
 observations = 'limited'  # limited or expanded mode of observations
-algs = [lowest, lowest, lowest, lowest]
+algs = [lowest, lowest, lowest]
 
 sim = Simulator(players=players, observations=observations)
 sim.load_algorithms(algs)

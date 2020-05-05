@@ -41,7 +41,7 @@ class Lowest():
                 logger.info('(Best card) Choose' + str((np.argmax(cards[:, i]), i)))
                 return np.argmax(cards[:, i]), i
         logger.error('Indexing error')
-        raise('Ummmmm')
+        raise IndexError('Ummmmm')
 
     def choose_sub_card(self, cards):
         # What card do you throw away? (Worst card?)
@@ -53,4 +53,4 @@ class Lowest():
                 logger.info('(Worst card) Choose' + str((np.argmax(cards[:, i]), i)))
                 return np.argmax(cards[:, i]), i
         logger.error('Indexing error')
-        raise('Uhhhhh')
+        raise IndexError('Uhhhhh')

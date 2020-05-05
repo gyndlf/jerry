@@ -19,7 +19,11 @@ def deal_hands(players=4):
     cards = np.arange(1, 53)  # All cards dealt
     np.random.shuffle(cards)
     length = int(52//players)
-    logger.warning('Undealt cards of ' + str(52-length*players))
+    if length*players is not 52:
+        # There are some undealt cards
+        logger.warning('Undealt cards of ' + str(52-length*players))
+        logger.error('Kitty is NOT implemented')
+        raise TypeError('Kitty is NOT implemented')
     hands = np.zeros((players, 4, 14))
 
     for player in range(players):
@@ -101,7 +105,7 @@ class Simulator():
             return o
         else:
             logger.error('Invalid mode')
-            raise('Mode not implemeted')
+            raise TypeError('Mode not implemeted')
 
     def choose(self, turn, state):
         # Choose what card to play from the state

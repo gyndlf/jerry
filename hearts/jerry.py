@@ -12,7 +12,7 @@ logger = logging.getLogger('jerry')
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
+#ch.setLevel(logging.INFO)  # Set the level here
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
@@ -28,7 +28,7 @@ players = 4
 observations = 'limited'  # limited or expanded mode of observations
 algs = [lowest, lowest, lowest, lowest]
 
-sim = Simulator(players=4, observations=observations)
+sim = Simulator(players=players, observations=observations)
 sim.load_algorithms(algs)
 
 # %%
@@ -37,7 +37,7 @@ done = False
 i = 1
 
 while i < 14:
-    logger.info('\n#--- ROUND ' + str(i))
+    logger.info('#--- ROUND ' + str(i) + '---#')
     # sim.print_cards()
     # For each round:
     # For each player in round
@@ -47,7 +47,7 @@ while i < 14:
     # (Q table modification if applicable)
     # Change new state, to current state
     # Compute points
-    logger.info('$--- Player Turn ' + str(starting_player))
+    logger.info('$--- Player Turn ' + str(starting_player) + '---$')
     a = sim.init_state(starting_player)
     sim.step(starting_player, a)
     move = 1
@@ -58,10 +58,10 @@ while i < 14:
         turn = starting_player + move
         if turn > 3:
             turn -= 4  # Loop back around
-        logger.info('$--- Player Turn' + str(turn))
+        logger.info('$--- Player Turn ' + str(turn) + ' ---$')
 
         s = sim.gen_state(turn)
-        logger.info('State of ' + str(s))
+        logger.info('State of\n' + str(s))
 
         a = sim.choose(turn, s)  # Make a decision
         sim.step(turn, a)  # play that decision
@@ -70,5 +70,5 @@ while i < 14:
     # sim.find_winner()
     i += 1
 sim.print_cards()
-logger.info('Cards left' + str(np.sum(sim.current_hands)))
+logger.info('Cards left ' + str(np.sum(sim.current_hands)))
 

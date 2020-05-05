@@ -19,7 +19,7 @@ def deal_hands(players=4):
     cards = np.arange(1, 53)  # All cards dealt
     np.random.shuffle(cards)
     length = int(52//players)
-
+    logger.warning('Undealt cards of ' + str(52-length*players))
     hands = np.zeros((players, 4, 14))
 
     for player in range(players):
@@ -38,6 +38,7 @@ def deal_hands(players=4):
                 # Diamond
                 hands[player, 3, card-13-13-13] = 1
         logger.info('Player ' + str(player) + "'s hand\n" + str(hands[player]))
+    logger.debug('Sum of player hands =' + str(np.sum(hands)))
     return hands
 
 

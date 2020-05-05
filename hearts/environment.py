@@ -47,12 +47,14 @@ def deal_hands(players=4):
 
 
 class Simulator():
-    def __init__(self, players, observations='limited'):
+    def __init__(self, players, observations='limited', scoring='face'):
         logger.info('Hearts engine initlised')
 
         # CONSTANTS
         self.hands = deal_hands(players)  # all cards
         self.players = players
+        assert scoring == 'face' or 'single'
+        self.scoring = scoring  # either face or single
         logger.warning('Only limited mode is implemented')
         assert observations == 'limited' or 'expanded' or 'full' or 'super'
         self.mode = observations  # Higher observations convey more infomation, but need a more complex machine
@@ -61,10 +63,13 @@ class Simulator():
         # full = (index, suit, card) index=0 all played cards, index=1 cards available, index=2 all cards played (game)
         # super = (index, suit, card) same as full, but index=2,3,4 is cards other plays have played
 
-        #Variables
+        # Variables (Changes each game)
         self.current_hands = self.hands  # only cards left
         self.played = []  # Cards played this round
         self.suit = 0  # What suit?
+
+        # Variables over multiple games
+        self.scores = [0]*self.players
 
         # List of what cards the model holds
         self.hearts = 0
@@ -75,6 +80,14 @@ class Simulator():
     def load_algorithms(self, algorithms):
         assert algorithms.__len__() == self.players  # Make sure right number is entered
         self.algs = algorithms  # These will be the models
+
+    def get_highest_card(self):
+        highest_card = 0
+        for play in self.played:  # Get the highest card of the right suit
+            if play[0] == self.suit and play[1] > highest_card:
+                highest_card = play[1]
+        logger.debug('Highest card played ' + str(highest_card))
+        return highest_card
 
     def print_cards(self):
         logger.info('--- Current cards ---')
@@ -92,10 +105,7 @@ class Simulator():
         # Played is cards played, turn is player's turn
         # create observation
         num_cards = len(self.played)
-        highest_card = 0
-        for play in self.played:  # Get the highest card of the right suit
-            if play[0] == self.suit and play[1] > highest_card:
-                highest_card = play[1]
+        highest_card = self.get_highest_card()
         if self.mode is 'limited':
             # limited = (index, suit, card) index=0 played cards (only highest card shown), index=1 cards available
             o = np.zeros((2, 4, 14))
@@ -118,6 +128,36 @@ class Simulator():
         self.played.append(action)
         logger.info('$--- CARDS Played' + str(self.played))
 
-    def find_winner(self):
-        pass
+    def score_cards(self):
+        # Score the played hands
+        score = 0
+        for suit, card in self.played:
+            if suit == self.hearts:
+                if self.scoring is 'face':
+                    score += card
+                elif self.scoring is 'single':
+                    score += 1
+                else:
+                    logger.error('Scoring type is not set')
+                    raise ValueError('Score type is not set')
+        return score
+
+    def find_winner(self, start):
+        # start = who started
+        # find highest card of starting suit
+        highest = (0,0)
+        player = 0
+        i = start
+        for suit, card in self.played:
+            if suit == self.suit and card > highest[1]:
+                highest = (suit, card)
+                player = i
+            i += 1
+            if i > self.players-1:
+                i = 0
+
+        score = self.score_cards()
+        logger.debug('Score of ' + str(score) + ' for player ' + str(player))
+        self.scores[player] += score
+        return player
 

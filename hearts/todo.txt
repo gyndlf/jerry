@@ -1,3 +1,4 @@
 TODO:
     - Create reward function / scoring
     - If there is a kitty, save this and add to the first that get points
+    - Find who has got the queen of spades

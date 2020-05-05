@@ -10,6 +10,9 @@
 # observation = (card's played, highest card played, my cards)
 
 import numpy as np
+import logging
+
+logger = logging.getLogger('jerry.environment')
 
 def deal_hands(players=4):
     # Deal the cards
@@ -34,17 +37,18 @@ def deal_hands(players=4):
             else:
                 # Diamond
                 hands[player, 3, card-13-13-13] = 1
-        print('Player', player, "'s hand\n", hands[player])
+        logger.info('Player ' + str(player) + "'s hand\n" + str(hands[player]))
     return hands
 
 
 class Simulator():
     def __init__(self, players, observations='limited'):
-        print('Hearts engine initlised')
+        logger.info('Hearts engine initlised')
 
         # CONSTANTS
         self.hands = deal_hands(players)  # all cards
         self.players = players
+        logger.warning('Only limited mode is implemented')
         assert observations == 'limited' or 'expanded' or 'full' or 'super'
         self.mode = observations  # Higher observations convey more infomation, but need a more complex machine
         # limited = (index, suit, card) index=0 played cards (only highest card shown), index=1 cards available
@@ -68,8 +72,9 @@ class Simulator():
         self.algs = algorithms  # These will be the models
 
     def print_cards(self):
+        logger.info('--- Current cards ---')
         for player in range(self.players):
-            print('Player', player, "'s hand\n", self.current_hands[player])
+            logger.info('Player' + str(player) + "'s hand\n" + str(self.current_hands[player]))
 
     def init_state(self, player):
         # Can choose any card... but choosing a suit is harder.
@@ -89,11 +94,12 @@ class Simulator():
         if self.mode is 'limited':
             # limited = (index, suit, card) index=0 played cards (only highest card shown), index=1 cards available
             o = np.zeros((2, 4, 14))
-            print('Obseration shape', o.shape)
+            logger.debug('Obseration shape' + str(o.shape))
             o[0,self.suit,highest_card] = 1  # only one hot largest card
             o[1, :, :] = self.current_hands[turn]  # add the player's hand
             return o
         else:
+            logger.error('Invalid mode')
             raise('Mode not implemeted')
 
     def choose(self, turn, state):
@@ -105,7 +111,7 @@ class Simulator():
         # action = (suit, card)
         self.current_hands[turn, action[0], action[1]] = 0  # Use the card
         self.played.append(action)
-        print('$--- CARDS Played', self.played)
+        logger.info('$--- CARDS Played' + str(self.played))
 
     def find_winner(self):
         pass

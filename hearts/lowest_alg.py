@@ -2,6 +2,9 @@
 # Algorithm that simply chooses the lowest card it can play
 
 import numpy as np
+import logging
+
+logger = logging.getLogger('jerry.lowest_alg')
 
 class Lowest():
     def __init__(self):
@@ -14,7 +17,7 @@ class Lowest():
         suit, card = np.where(observation[0,:,:]==1)
         suit = int(suit)
         card = int(card)
-        print(suit, card)
+        logger.debug(str(suit) + str(card))
 
         sel = np.argmax(observation[1, suit])  # array of 1's and 0's
         if sel == 0:
@@ -23,20 +26,21 @@ class Lowest():
             # Then choose worst card
         else:
             choice = (suit, sel)
-        print('*---LOWEST---*')
-        print('Choosing lowest card of', choice)
+        logger.info('*---LOWEST---*')
+        logger.info('Choosing lowest card of' + str(choice))
         return choice
 
     def choose_first_card(self, cards):
         # What card should you play first?
-        print('Cards:\n', cards)
+        logger.info('Cards:\n' + str(cards))
         card = 0
         for i in range(14):
-            #print(i, '==>', np.argmax(cards[:, i]))
+            logger.debug(str(i) + ' ==> ' + str(np.argmax(cards[:, i])))
             if np.sum(cards[:, i]) > 0:
                 # There is a card
-                print('(Best card) Choose', (np.argmax(cards[:, i]), i))
+                logger.info('(Best card) Choose' + str((np.argmax(cards[:, i]), i)))
                 return np.argmax(cards[:, i]), i
+        logger.error('Indexing error')
         raise('Ummmmm')
 
     def choose_sub_card(self, cards):
@@ -46,5 +50,7 @@ class Lowest():
             # print(i, '==>', np.argmax(cards[:, i]))
             if np.sum(cards[:, i]) > 0:
                 # There is a card
-                print('(Worst card) Choose', (np.argmax(cards[:, i]), i))
+                logger.info('(Worst card) Choose' + str((np.argmax(cards[:, i]), i)))
                 return np.argmax(cards[:, i]), i
+        logger.error('Indexing error')
+        raise('Uhhhhh')

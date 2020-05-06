@@ -3,7 +3,7 @@
 # The code to run the system. Cause jupyter is just..... better
 
 from environment import Simulator
-from algs import lowest
+from algs import lowest, highlow
 import numpy as np
 
 import logging
@@ -22,11 +22,12 @@ logger.addHandler(ch)
 
 
 lowest = lowest.Lowest()
+highlow = highlow.HighLow()
 
-players = 3
+players = 4
 observations = 'limited'  # limited or expanded mode of observations
 scoring = 'single'  # face or single modes
-algs = [lowest, lowest, lowest]
+algs = [highlow, highlow, highlow, highlow]
 
 sim = Simulator(players=players, observations=observations, scoring=scoring)
 sim.load_algorithms(algs)
@@ -47,7 +48,7 @@ while i < 14:  # 14 is a full game of 4 players
     # (Q table modification if applicable)
     # Change new state, to current state
     # Compute points
-    logger.info('$--- Player Turn ' + str(starting_player) + '---$')
+    logger.info('$--- Player Turn ' + str(starting_player) + ' -> ' + str(algs[starting_player]) + '---$')
     a = sim.init_state(starting_player)
     sim.step(starting_player, a)
     move = 1
@@ -57,7 +58,7 @@ while i < 14:  # 14 is a full game of 4 players
         turn = starting_player + move
         if turn > players-1:
             turn -= players  # Loop back around
-        logger.info('$--- Player Turn ' + str(turn) + ' ---$')
+        logger.info('$--- Player Turn ' + str(turn) + ' -> ' + str(algs[turn]) + ' ---$')
 
         s = sim.gen_state(turn)
         logger.info('State of\n' + str(s))

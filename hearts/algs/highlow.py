@@ -1,14 +1,15 @@
-# d6617
-# Algorithm that simply chooses the lowest card it can play
+# 6619
+# An semi smarter alg.
+# Choses the highest card that it can play, under the top card currently played
 
 import numpy as np
 import logging
 
-logger = logging.getLogger('jerry.algs.lowest')
+logger = logging.getLogger('jerry.algs.highlow')
 
-class Lowest():
+class HighLow():
     def __init__(self):
-        self.info = 'Algorithm that takes a hand and chooses the lowest card'
+        self.info = 'Algorithm that takes a hand and chooses the highest card under the highest card played'
 
     def think(self, mode, observation):
         # Takes inputs, returns action
@@ -16,13 +17,22 @@ class Lowest():
 
         suit, card = np.where(observation[0,:,:]==1)
         suit = int(suit)
-        card = int(card)
+        highest_played_card = int(card)
 
-        sel = np.argmax(observation[1, suit])  # array of 1's and 0's
-        if sel == 0:
+        lowest = np.argmax(observation[1, suit])
+        sel = 0
+        for i, card in enumerate(observation[1, suit]):
+            if card == 1 and i > sel and i < highest_played_card:
+                sel = i
+        logger.info('Highest low of ' + str(sel) + ' with lowest card of ' + str(lowest))
+
+        if sel == 0 and lowest == 0:
             choice = self.choose_sub_card(observation[1])
             # There is none of that suit
             # Then choose worst card
+        elif sel == 0:
+            # Then only a lower card is not possible
+            choice = (suit, lowest)
         else:
             choice = (suit, sel)
         logger.info('Choosing lowest card of' + str(choice))

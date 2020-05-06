@@ -184,7 +184,7 @@ class Simulator():
                 i = 0
 
         score = self.score_cards(self.played)
-        if score > 0 and self.first_score:
+        if score > 0 and self.first_score and self.kitty is not None:
             # Add on the kitty
             kitty = self.score_cards(self.kitty)
             logger.info('First points for round detected. Adding kitty of ' + str(kitty))

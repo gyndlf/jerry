@@ -41,7 +41,7 @@ def deal_hands(players=4):
         for card in hand:
             suit, card = card_num_to_tuple(card)
             hands[player, suit, card] = 1
-        logger.info('Player ' + str(player) + "'s hand\n" + str(hands[player]))
+        logger.debug('Player ' + str(player) + "'s hand\n" + str(hands[player]))
     logger.debug('Sum of player hands =' + str(np.sum(hands)))
 
     if length*players is not 52:
@@ -61,7 +61,7 @@ def deal_hands(players=4):
 
 class Simulator():
     def __init__(self, players, observations='limited', scoring='face'):
-        logger.info('Hearts engine initlised')
+        logger.info('Hearts engine initilised')
 
         # CONSTANTS
         self.hands, self.kitty = deal_hands(players)  # all cards
@@ -83,9 +83,7 @@ class Simulator():
         self.current_hands = self.hands  # only cards left
         self.played = []  # Cards played this round
         self.suit = 0  # What suit?
-
-        # Variables over multiple games
-        self.scores = [0]*self.players
+        self.scores = np.zeros(self.players)
 
         # List of what cards the model holds
         self.hearts = 0
@@ -107,9 +105,9 @@ class Simulator():
         return highest_card
 
     def print_cards(self):
-        logger.info('--- Current cards ---')
+        logger.debug('--- Current cards ---')
         for player in range(self.players):
-            logger.info('Player' + str(player) + "'s hand\n" + str(self.current_hands[player]))
+            logger.debug('Player' + str(player) + "'s hand\n" + str(self.current_hands[player]))
 
     def init_state(self, player):
         # Can choose any card... but choosing a suit is harder.
@@ -143,7 +141,7 @@ class Simulator():
         # action = (suit, card)
         self.current_hands[turn, action[0], action[1]] = 0  # Use the card
         self.played.append(action)
-        logger.info('Cards Played' + str(self.played))
+        logger.debug('Cards Played' + str(self.played))
 
     def score_cards(self, cards):
         # Score the played hands
@@ -159,7 +157,7 @@ class Simulator():
                     raise ValueError('Score type is not set')
             elif suit == self.queen[0] and card == self.queen[1]:
                 # Oh no queen of spades
-                logger.info('Can we get a F in chat for that Queen of spades?')
+                logger.debug('Can we get a F in chat for that Queen of spades?')
                 if self.scoring is 'face':
                     score += 50
                 elif self.scoring is 'single':
@@ -175,6 +173,7 @@ class Simulator():
         highest = (0,0)
         player = 0
         i = start
+        logger.debug('Cards Played' + str(self.played))
         for suit, card in self.played:
             if suit == self.suit and card > highest[1]:
                 highest = (suit, card)
@@ -187,7 +186,7 @@ class Simulator():
         if score > 0 and self.first_score and self.kitty is not None:
             # Add on the kitty
             kitty = self.score_cards(self.kitty)
-            logger.info('First points for round detected. Adding kitty of ' + str(kitty))
+            logger.debug('First points for round detected. Adding kitty of ' + str(kitty))
             score += kitty
             self.first_score = False
 
@@ -195,3 +194,14 @@ class Simulator():
         self.scores[player] += score
         return player
 
+    def reset(self):
+        # Resetting environment
+        logger.debug('Resetting env.')
+
+        self.hands, self.kitty = deal_hands(self.players)
+        self.first_score = True
+
+        self.current_hands = self.hands  # only cards left
+        self.played = []  # Cards played this round
+        self.suit = 0  # What suit?
+        self.scores = np.zeros(self.players)

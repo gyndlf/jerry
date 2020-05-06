@@ -39,7 +39,7 @@ class SlowLow():
                 # Find the biggest card that you can play
                 highest = i
 
-        logger.info('Highest card: %a lowest card: %a highlow card: %a' % (highest,lowest,sel))
+        logger.debug('Highest card: %a lowest card: %a highlow card: %a' % (highest,lowest,sel))
 
         if highest > 0 and np.random.random() < self.threshold:
             choice = (suit, highest)
@@ -53,19 +53,19 @@ class SlowLow():
             choice = (suit, lowest)
         else:
             choice = (suit, sel)
-        logger.info('Choosing lowest card of' + str(choice))
+        logger.debug('Choosing lowest card of' + str(choice))
         self.threshold *= self.diminisher
         return choice
 
     def choose_first_card(self, cards):
         # What card should you play first?
-        logger.info('Cards:\n' + str(cards))
+        logger.debug('Cards:\n' + str(cards))
         self.threshold *= self.diminisher
         card = 0
         for i in range(14):
             if np.sum(cards[:, i]) > 0:
                 # There is a card
-                logger.info('(Best card) Choose' + str((np.argmax(cards[:, i]), i)))
+                logger.debug('(Best card) Choose' + str((np.argmax(cards[:, i]), i)))
                 return np.argmax(cards[:, i]), i
         logger.error('Indexing error')
         raise IndexError('Ummmmm')
@@ -77,7 +77,7 @@ class SlowLow():
             # print(i, '==>', np.argmax(cards[:, i]))
             if np.sum(cards[:, i]) > 0:
                 # There is a card
-                logger.info('(Worst card) Choose' + str((np.argmax(cards[:, i]), i)))
+                logger.debug('(Worst card) Choose' + str((np.argmax(cards[:, i]), i)))
                 return np.argmax(cards[:, i]), i
         logger.error('Indexing error')
         raise IndexError('Uhhhhh')

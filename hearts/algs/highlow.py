@@ -24,7 +24,7 @@ class HighLow():
         for i, card in enumerate(observation[1, suit]):
             if card == 1 and i > sel and i < highest_played_card:
                 sel = i
-        logger.info('Highest low of ' + str(sel) + ' with lowest card of ' + str(lowest))
+        logger.debug('Highest low of ' + str(sel) + ' with lowest card of ' + str(lowest))
 
         if sel == 0 and lowest == 0:
             choice = self.choose_sub_card(observation[1])
@@ -35,17 +35,17 @@ class HighLow():
             choice = (suit, lowest)
         else:
             choice = (suit, sel)
-        logger.info('Choosing lowest card of' + str(choice))
+        logger.debug('Choosing lowest card of' + str(choice))
         return choice
 
     def choose_first_card(self, cards):
         # What card should you play first?
-        logger.info('Cards:\n' + str(cards))
+        logger.debug('Cards:\n' + str(cards))
         card = 0
         for i in range(14):
             if np.sum(cards[:, i]) > 0:
                 # There is a card
-                logger.info('(Best card) Choose' + str((np.argmax(cards[:, i]), i)))
+                logger.debug('(Best card) Choose' + str((np.argmax(cards[:, i]), i)))
                 return np.argmax(cards[:, i]), i
         logger.error('Indexing error')
         raise IndexError('Ummmmm')
@@ -57,7 +57,7 @@ class HighLow():
             # print(i, '==>', np.argmax(cards[:, i]))
             if np.sum(cards[:, i]) > 0:
                 # There is a card
-                logger.info('(Worst card) Choose' + str((np.argmax(cards[:, i]), i)))
+                logger.debug('(Worst card) Choose' + str((np.argmax(cards[:, i]), i)))
                 return np.argmax(cards[:, i]), i
         logger.error('Indexing error')
         raise IndexError('Uhhhhh')

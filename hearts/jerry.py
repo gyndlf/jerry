@@ -26,9 +26,10 @@ lowest = Lowest()
 
 players = 4
 observations = 'limited'  # limited or expanded mode of observations
+scoring = 'single'  # face or single modes
 algs = [lowest, lowest, lowest, lowest]
 
-sim = Simulator(players=players, observations=observations)
+sim = Simulator(players=players, observations=observations, scoring=scoring)
 sim.load_algorithms(algs)
 
 # %%

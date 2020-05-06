@@ -76,6 +76,7 @@ class Simulator():
         self.clubs = 1
         self.spades = 2
         self.diamonds = 3
+        self.queen = (self.spades, 12)  # The QUEEN OF SPADES!!!
 
     def load_algorithms(self, algorithms):
         assert algorithms.__len__() == self.players  # Make sure right number is entered
@@ -137,6 +138,16 @@ class Simulator():
                     score += card
                 elif self.scoring is 'single':
                     score += 1
+                else:
+                    logger.error('Scoring type is not set')
+                    raise ValueError('Score type is not set')
+            elif suit == self.queen[0] and card == self.queen[1]:
+                # Oh no queen of spades
+                logger.info('Can we get a F in chat for that Queen of spades?')
+                if self.scoring is 'face':
+                    score += 50
+                elif self.scoring is 'single':
+                    score += 13
                 else:
                     logger.error('Scoring type is not set')
                     raise ValueError('Score type is not set')

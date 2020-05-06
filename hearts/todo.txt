@@ -1,5 +1,4 @@
 TODO:
     - Create reward function
-    - make slowlow choose a high card starting sometimes
-    - add player version
+    - check if player input is valid
     - add custom dealing

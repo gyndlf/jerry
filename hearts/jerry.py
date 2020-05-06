@@ -3,13 +3,13 @@
 # The code to run the system. Cause jupyter is just..... better
 
 from environment import Simulator
-from algs import lowest, highlow, slowlow
+from algs import lowest, highlow, slowlow, real
 import numpy as np
 
 import logging
 
 logger = logging.getLogger('jerry')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch = logging.StreamHandler()
 #ch.setLevel(logging.INFO)  # Set the level here
@@ -27,7 +27,7 @@ observations = 'limited'  # limited or expanded mode of observations
 scoring = 'single'  # face or single modes
 
 algs = [slowlow.SlowLow(players=players),
-        lowest.Lowest(),
+        real.Real(),
         lowest.Lowest(),
         highlow.HighLow()]
 
@@ -35,7 +35,7 @@ sim = Simulator(players=players, observations=observations, scoring=scoring)
 sim.load_algorithms(algs)
 
 # %%
-num_games = 5000
+num_games = 1
 total_scores = np.zeros((players))
 logger.info('Running %a games with algs of %a' % (num_games, algs))
 for game in range(num_games):

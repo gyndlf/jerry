@@ -27,24 +27,24 @@ observations = 'limited'  # limited or expanded mode of observations
 scoring = 'single'  # face or single modes
 
 algs = [slowlow.SlowLow(players=players),
-        slowlow.SlowLow(players=players),
-        slowlow.SlowLow(players=players),
+        lowest.Lowest(),
+        lowest.Lowest(),
         highlow.HighLow()]
 
 sim = Simulator(players=players, observations=observations, scoring=scoring)
 sim.load_algorithms(algs)
 
 # %%
-num_games = 50
+num_games = 5000
 total_scores = np.zeros((players))
-
+logger.info('Running %a games with algs of %a' % (num_games, algs))
 for game in range(num_games):
     sim.reset()
     starting_player = 0  # make this ace of clubs eventually
     done = False
     i = 1
 
-    while i < 14:  # 14 is a full game of 4 players
+    while i < int(52//players)+1:  # 14 is a full game of 4 players
         logger.debug('#--- ROUND ' + str(i) + '---#')
         # sim.print_cards()
         # For each round:

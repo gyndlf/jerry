@@ -14,36 +14,49 @@ import logging
 
 logger = logging.getLogger('jerry.environment')
 
+def card_num_to_tuple(card):
+    if card < 14:
+        # Heart
+        return (0, card)
+    elif card < 27:
+        # Clubs
+        return (1, card - 13)
+    elif card < 40:
+        # Spades
+        return (2, card - 13 - 13)
+    else:
+        # Diamond
+        return (3, card - 13 - 13 - 13)
+
 def deal_hands(players=4):
     # Deal the cards
     cards = np.arange(1, 53)  # All cards dealt
     np.random.shuffle(cards)
     length = int(52//players)
-    if length*players is not 52:
-        # There are some undealt cards
-        logger.warning('Undealt cards of ' + str(52-length*players))
-        logger.error('Kitty is NOT implemented')
-        raise TypeError('Kitty is NOT implemented')
+
     hands = np.zeros((players, 4, 14))
 
     for player in range(players):
         hand = cards[player*length:player*length+length]  # get "your" cards
         for card in hand:
-            if card < 14:
-                # Heart
-                hands[player, 0, card] = 1
-            elif card < 27:
-                # Clubs
-                hands[player, 1, card-13] = 1
-            elif card < 40:
-                # Spades
-                hands[player, 2, card-13-13] = 1
-            else:
-                # Diamond
-                hands[player, 3, card-13-13-13] = 1
+            suit, card = card_num_to_tuple(card)
+            hands[player, suit, card] = 1
         logger.info('Player ' + str(player) + "'s hand\n" + str(hands[player]))
     logger.debug('Sum of player hands =' + str(np.sum(hands)))
-    return hands
+
+    if length*players is not 52:
+        # There are some undealt cards
+        logger.warning('Undealt cards of ' + str(52-length*players) + ' -> Creating kitty.')
+        left = cards[length*players:]
+        kitty = []
+        for card in left:
+            kitty.append(card_num_to_tuple(card))
+        logger.debug('Kitty of ' + str(kitty))
+        logger.debug('Final sum of ' + str(np.sum(hands) + len(kitty)))
+    else:
+        kitty = None
+
+    return hands, kitty
 
 
 class Simulator():
@@ -51,10 +64,12 @@ class Simulator():
         logger.info('Hearts engine initlised')
 
         # CONSTANTS
-        self.hands = deal_hands(players)  # all cards
+        self.hands, self.kitty = deal_hands(players)  # all cards
         self.players = players
+
         assert scoring == 'face' or 'single'
         self.scoring = scoring  # either face or single
+
         logger.warning('Only limited mode is implemented')
         assert observations == 'limited' or 'expanded' or 'full' or 'super'
         self.mode = observations  # Higher observations convey more infomation, but need a more complex machine

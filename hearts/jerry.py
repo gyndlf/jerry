@@ -9,14 +9,13 @@ import numpy as np
 import logging
 
 logger = logging.getLogger('jerry')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch = logging.StreamHandler()
 #ch.setLevel(logging.INFO)  # Set the level here
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
-logger.debug('Hi')
 # Save logs to file
 # fh = logging.FileHandler('jerry.log')
 # fh.setLevel(logging.DEBUG)
@@ -24,10 +23,10 @@ logger.debug('Hi')
 
 lowest = Lowest()
 
-players = 4
+players = 3
 observations = 'limited'  # limited or expanded mode of observations
 scoring = 'single'  # face or single modes
-algs = [lowest, lowest, lowest, lowest]
+algs = [lowest, lowest, lowest]
 
 sim = Simulator(players=players, observations=observations, scoring=scoring)
 sim.load_algorithms(algs)

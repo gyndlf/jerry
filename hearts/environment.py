@@ -66,6 +66,7 @@ class Simulator():
         # CONSTANTS
         self.hands, self.kitty = deal_hands(players)  # all cards
         self.players = players
+        self.first_score = True  # Turned false once first player recieves a score
 
         assert scoring == 'face' or 'single'
         self.scoring = scoring  # either face or single
@@ -144,10 +145,10 @@ class Simulator():
         self.played.append(action)
         logger.info('$--- CARDS Played' + str(self.played))
 
-    def score_cards(self):
+    def score_cards(self, cards):
         # Score the played hands
         score = 0
-        for suit, card in self.played:
+        for suit, card in cards:
             if suit == self.hearts:
                 if self.scoring is 'face':
                     score += card
@@ -182,7 +183,14 @@ class Simulator():
             if i > self.players-1:
                 i = 0
 
-        score = self.score_cards()
+        score = self.score_cards(self.played)
+        if score > 0 and self.first_score:
+            # Add on the kitty
+            kitty = self.score_cards(self.kitty)
+            logger.info('First points for round detected. Adding kitty of ' + str(kitty))
+            score += kitty
+            self.first_score = False
+
         logger.debug('Score of ' + str(score) + ' for player ' + str(player))
         self.scores[player] += score
         return player

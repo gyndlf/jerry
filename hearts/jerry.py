@@ -56,8 +56,8 @@ while i < 14:  # 14 is a full game of 4 players
         # So only a certain number of moves
 
         turn = starting_player + move
-        if turn > 3:
-            turn -= 4  # Loop back around
+        if turn > players-1:
+            turn -= players  # Loop back around
         logger.info('$--- Player Turn ' + str(turn) + ' ---$')
 
         s = sim.gen_state(turn)

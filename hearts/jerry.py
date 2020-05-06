@@ -3,7 +3,7 @@
 # The code to run the system. Cause jupyter is just..... better
 
 from environment import Simulator
-from lowest_alg import Lowest
+from algs import lowest
 import numpy as np
 
 import logging
@@ -21,7 +21,7 @@ logger.addHandler(ch)
 # fh.setLevel(logging.DEBUG)
 
 
-lowest = Lowest()
+lowest = lowest.Lowest()
 
 players = 3
 observations = 'limited'  # limited or expanded mode of observations
@@ -54,7 +54,6 @@ while i < 14:  # 14 is a full game of 4 players
 
     while move < players:
         # So only a certain number of moves
-
         turn = starting_player + move
         if turn > players-1:
             turn -= players  # Loop back around

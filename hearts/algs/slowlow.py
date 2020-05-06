@@ -60,6 +60,7 @@ class SlowLow():
     def choose_first_card(self, cards):
         # What card should you play first?
         logger.info('Cards:\n' + str(cards))
+        self.threshold *= self.diminisher
         card = 0
         for i in range(14):
             if np.sum(cards[:, i]) > 0:

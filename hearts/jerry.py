@@ -26,10 +26,10 @@ players = 4
 observations = 'limited'  # limited or expanded mode of observations
 scoring = 'single'  # face or single modes
 
-lowest = lowest.Lowest()
-highlow = highlow.HighLow()
-slowlow = slowlow.SlowLow(players=players)
-algs = [slowlow, slowlow, slowlow, highlow]
+algs = [slowlow.SlowLow(players=players),
+        slowlow.SlowLow(players=players),
+        slowlow.SlowLow(players=players),
+        highlow.HighLow()]
 
 sim = Simulator(players=players, observations=observations, scoring=scoring)
 sim.load_algorithms(algs)

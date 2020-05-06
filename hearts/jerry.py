@@ -3,7 +3,7 @@
 # The code to run the system. Cause jupyter is just..... better
 
 from environment import Simulator
-from algs import lowest, highlow
+from algs import lowest, highlow, slowlow
 import numpy as np
 
 import logging
@@ -21,13 +21,15 @@ logger.addHandler(ch)
 # fh.setLevel(logging.DEBUG)
 
 
-lowest = lowest.Lowest()
-highlow = highlow.HighLow()
 
 players = 4
 observations = 'limited'  # limited or expanded mode of observations
 scoring = 'single'  # face or single modes
-algs = [highlow, highlow, highlow, highlow]
+
+lowest = lowest.Lowest()
+highlow = highlow.HighLow()
+slowlow = slowlow.SlowLow(players=players)
+algs = [slowlow, slowlow, slowlow, highlow]
 
 sim = Simulator(players=players, observations=observations, scoring=scoring)
 sim.load_algorithms(algs)

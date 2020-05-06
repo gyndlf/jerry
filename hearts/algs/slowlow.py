@@ -8,8 +8,15 @@ import logging
 logger = logging.getLogger('jerry.algs.slowlow')
 
 class SlowLow():
-    def __init__(self):
+    def __init__(self, players):
         self.info = 'Algorithm that takes a hand and chooses the highest card under the highest card played'
+        self.players = players  # Num of players
+        self.num_full_hand = int(52//players)  # sum of a full hand
+        self.threshold = 1.0
+        self.final_threshold = 0.01  # the wanted result for the threshold after the game
+        self.diminisher = np.exp(np.log(self.final_threshold)/self.num_full_hand)  # self.threshold *= self.diminisher each round
+        logger.debug('Estimating that %a is a full hand.' % self.num_full_hand)
+        logger.debug('Setting diminishing constant to be %a%%.' % self.diminisher)
 
     def think(self, mode, observation):
         # Takes inputs, returns action
@@ -19,14 +26,25 @@ class SlowLow():
         suit = int(suit)
         highest_played_card = int(card)
 
-        lowest = np.argmax(observation[1, suit])
+        logger.debug('Threshold is %a%%' % self.threshold)
+
+        lowest = np.argmax(observation[1, suit])  # Find lowest card
+        highest = 0
         sel = 0
         for i, card in enumerate(observation[1, suit]):
             if card == 1 and i > sel and i < highest_played_card:
+                # Find the highest card under
                 sel = i
-        logger.info('Highest low of ' + str(sel) + ' with lowest card of ' + str(lowest))
+            if card == 1 and i > highest:
+                # Find the biggest card that you can play
+                highest = i
 
-        if sel == 0 and lowest == 0:
+        logger.info('Highest card: %a lowest card: %a highlow card: %a' % (highest,lowest,sel))
+
+        if highest > 0 and np.random.random() < self.threshold:
+            choice = (suit, highest)
+
+        elif sel == 0 and lowest == 0:
             choice = self.choose_sub_card(observation[1])
             # There is none of that suit
             # Then choose worst card
@@ -36,6 +54,7 @@ class SlowLow():
         else:
             choice = (suit, sel)
         logger.info('Choosing lowest card of' + str(choice))
+        self.threshold *= self.diminisher
         return choice
 
     def choose_first_card(self, cards):

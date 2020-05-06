@@ -143,7 +143,7 @@ class Simulator():
         # action = (suit, card)
         self.current_hands[turn, action[0], action[1]] = 0  # Use the card
         self.played.append(action)
-        logger.info('$--- CARDS Played' + str(self.played))
+        logger.info('Cards Played' + str(self.played))
 
     def score_cards(self, cards):
         # Score the played hands

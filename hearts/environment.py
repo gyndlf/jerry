@@ -15,6 +15,7 @@ import logging
 logger = logging.getLogger('jerry.environment')
 
 def card_num_to_tuple(card):
+    # Ultimatly doesn't matter which is 0,1,2,3 as it was just random stuff to being with
     if card < 14:
         # Heart
         return (0, card)

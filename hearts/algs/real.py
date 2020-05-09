@@ -12,9 +12,11 @@ class Real():
     def __init__(self):
         self.info = 'A real player. Cards must be manually entered'
         self.help = 'Hearts = 0, clubs = 1, spades = 2, diamonds = 3'
+        logger.warning('No error correction implemented. All errors will not be caught.')
 
     def enter_card(self):
         done = False
+        logger.warning('No error correction implemented. All errors will not be caught.')
         while not done:
             entered = input('Enter card (suit, card) {h for help}: ')
             if entered == 'h':

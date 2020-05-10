@@ -26,7 +26,7 @@ else:
     value_dir = os.path.join(location, 'value', 'test')
     suits_dir = os.path.join(location, 'suits', 'test')
 
-def take_photo(fname='output.jpg'):
+def take_photo(fname='tmp.jpg'):
     os.system('fswebcam --no-banner %a' % fname)
 
 done = False
@@ -41,10 +41,10 @@ while not done:
 
     fname = str(index) + ' ' + args[0] + '.jpg'
     print(fname)
-    copyfile('output.jpg', os.path.join(suits_dir, fname))
+    copyfile('tmp.jpg', os.path.join(suits_dir, fname))
 
     fname = str(index) + ' ' + args[1] + '.jpg'
     print(fname)
-    copyfile('output.jpg', os.path.join(value_dir, fname))
+    copyfile('tmp.jpg', os.path.join(value_dir, fname))
 
     index += 1

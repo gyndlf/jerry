@@ -5,7 +5,6 @@
 # Suit is simplified down to s=spades, h=hearts, d=diamonds, c=clubs
 
 # TODO:
-#   - actually get this thing running
 #   - add joker support
 
 values = [1,2,3,4,5,6,7,8,9,10,11,12,13]

@@ -12,7 +12,8 @@ import numpy as np
 class Eyes:
     def __init__(self):
         self.tmp_name = 'tmp.jpg'
-        self.value_model = 'value-v1.h5'
+        self.base = os.path.dirname(os.path.abspath(__file__))
+        self.value_model = os.path.join(self.base, 'value-v1.h5')
 
         self.model = models.load_model(self.value_model)
         print('Loaded old model of', self.value_model)
@@ -20,7 +21,7 @@ class Eyes:
     def take_photo(self):
         os.system('fswebcam --no-banner %a' % self.tmp_name)
 
-    def read(self):
+    def extract_info(self):
         # Test on custom image
         img = image.load_img(self.tmp_name, target_size=(150, 150),
                              color_mode='grayscale')
@@ -42,9 +43,6 @@ class Eyes:
         labels = [1, 10, 11, 12, 13, 2, 3, 4, 5, 6, 7, 8, 9]
         return labels[value]
 
-eyes = Eyes()
-
-while True:
-    input('(Press any key to run)\n')
-    eyes.take_photo()
-    eyes.read()
+    def read(self):
+        self.take_photo()
+        return self.extract_info()

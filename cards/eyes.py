@@ -9,6 +9,7 @@ import os
 from keras.preprocessing import image
 import numpy as np
 import logging
+import subprocess
 
 logger = logging.getLogger('jerry.cards.eyes')
 #logger.setLevel(logging.INFO)
@@ -25,7 +26,11 @@ class Eyes:
         logger.debug('Loaded old model of %a' % self.value_model)
 
     def take_photo(self):
-        os.system('fswebcam --no-banner %a' % self.tmp_name)
+        cmd = 'fswebcam --no-banner %a' % self.tmp_name
+        out = subprocess.check_output(cmd, shell=True, text=True, stderr=subprocess.STDOUT)
+        for line in out.split('\n'):
+            logger.debug(line)
+        #os.system('fswebcam --no-banner %a' % self.tmp_name)
 
     def extract_info(self):
         # Test on custom image

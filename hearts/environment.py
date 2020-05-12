@@ -12,7 +12,7 @@
 import numpy as np
 import logging
 
-logger = logging.getLogger('jerry.environment')
+logger = logging.getLogger('run-sim.environment')
 
 def card_num_to_tuple(card):
     # Ultimatly doesn't matter which is 0,1,2,3 as it was just random stuff to being with

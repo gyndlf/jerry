@@ -8,6 +8,12 @@ from keras import models
 import os
 from keras.preprocessing import image
 import numpy as np
+import logging
+
+logger = logging.getLogger('jerry.cards.eyes')
+#logger.setLevel(logging.INFO)
+
+#logger.info('Loaded eyes class')
 
 class Eyes:
     def __init__(self):
@@ -16,7 +22,7 @@ class Eyes:
         self.value_model = os.path.join(self.base, 'value-v1.h5')
 
         self.model = models.load_model(self.value_model)
-        print('Loaded old model of', self.value_model)
+        logger.debug('Loaded old model of %a' % self.value_model)
 
     def take_photo(self):
         os.system('fswebcam --no-banner %a' % self.tmp_name)
@@ -32,9 +38,9 @@ class Eyes:
 
         pred = self.model.predict(x, verbose=0)[0]
 
-        print(pred)
+        logger.debug('Value prediction \n%a' % pred)
         label = self.value_to_label(np.argmax(pred))
-        print('Prediction of ', label)
+        logger.info('Prediction of %a' % label)
         return label
 
     def value_to_label(self, value):

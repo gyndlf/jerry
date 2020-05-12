@@ -8,7 +8,7 @@ import numpy as np
 
 import logging
 
-logger = logging.getLogger('jerry')
+logger = logging.getLogger('run-sim')
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch = logging.StreamHandler()

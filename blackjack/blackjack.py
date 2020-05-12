@@ -3,13 +3,18 @@
 
 import numpy as np
 import os
+import logging
+
+logger = logging.getLogger('jerry.blackjack')
 
 class Blackjack:
     def __init__(self):
+        logger.info('Loading blackjack')
         self.base = os.path.dirname(os.path.abspath(__file__))
         self.Q = np.load(os.path.join(self.base, 'q-table.npy'))
 
-        print('qtable shape of', self.Q.shape)
+        logger.debug('Using qtable at %a' % os.path.join(self.base, 'q-table.npy'))
+        logger.debug('qtable shape of %a' % str(self.Q.shape))
 
     def usable_ace(self, hand):  # Can we play an ace?
         return 1 in hand and sum(hand) + 10 <= 21
@@ -46,7 +51,7 @@ class Blackjack:
         while not done:
             action = np.argmax(self.Q[self.sum_hand(hand), dealer_card, int(self.usable_ace(hand)), :])
             # print('Stats of', total, dealer_card, ace)
-            print('Converting q values of ', self.Q[self.sum_hand(hand), dealer_card, int(self.usable_ace(hand)), :])
+            logger.debug('Converting q values of \n%a' % self.Q[self.sum_hand(hand), dealer_card, int(self.usable_ace(hand)), :])
             if action == 0:
                 # Stand
                 print('I choose to....\nSTAND.')
@@ -57,9 +62,9 @@ class Blackjack:
                 hand.append(self.draw_card(eyes, msg='Whats my next card? [int(1-10)] : '))
                 if self.sum_hand(hand) > 21:
                     # Game over, I went bust
-                    print('Oops I just lost')
+                    print('Oops, I just lost')
                     done = True
-        print('Sum of', self.sum_hand(hand))
+        logger.info('Sum of %a' % self.sum_hand(hand))
 
 
 

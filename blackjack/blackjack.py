@@ -33,7 +33,7 @@ class Blackjack:
     def draw_card(self, eyes, msg=''):
         # Use the eyes alg to "see" the card
         input(msg)
-        return self.refine_card(int(eyes.read()))
+        return self.refine_card(int(eyes.read()[1]))  # only want the value not the suit
 
     def gen_hand(self, eyes):
         hand = []
@@ -43,7 +43,6 @@ class Blackjack:
         return hand
 
     def run_round(self, eyes, cards):
-        print('Press enter once the appropriate card has been inserted.')
         hand = cards[:2]
         dealer_card = cards[2]
 
@@ -51,7 +50,7 @@ class Blackjack:
         while not done:
             action = np.argmax(self.Q[self.sum_hand(hand), dealer_card, int(self.usable_ace(hand)), :])
             # print('Stats of', total, dealer_card, ace)
-            logger.debug('Converting q values of \n%a' % self.Q[self.sum_hand(hand), dealer_card, int(self.usable_ace(hand)), :])
+            logger.debug('Converting q values of %a' % self.Q[self.sum_hand(hand), dealer_card, int(self.usable_ace(hand)), :])
             if action == 0:
                 # Stand
                 print('I choose to....\nSTAND.')

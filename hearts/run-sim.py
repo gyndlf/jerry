@@ -27,7 +27,7 @@ observations = 'limited'  # limited or expanded mode of observations
 scoring = 'single'  # face or single modes
 
 algs = [slowlow.SlowLow(players=players),
-        lowest.Lowest(),
+        real.Real(),
         lowest.Lowest(),
         highlow.HighLow()]
 

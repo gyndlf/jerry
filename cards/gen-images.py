@@ -6,6 +6,8 @@
 
 # TODO:
 #   - add joker support
+#   - add lighting changes so better accuracy
+#   - change file system to match actual layout
 
 values = [1,2,3,4,5,6,7,8,9,10,11,12,13]
 suits = ['clubs', 'hearts', 'spades', 'diamonds']

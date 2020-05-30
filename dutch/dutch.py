@@ -4,11 +4,11 @@
 
 from Player import Player
 import numpy as np
-
+import time
 import logging
 
 logger = logging.getLogger('dutch')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch = logging.StreamHandler()
 #ch.setLevel(logging.INFO)  # Set the level here
@@ -20,17 +20,21 @@ logger.warning('- Jack and Queen dont allow you to steal / look at cards')
 logger.warning('- There is no final round after someone calls Dutch')
 
 lr = 0.01  # learning rate
-eps = 0.5  # random exploration
-gma = 0.9  # gamma
-epis = 5  # episodes
-decay_rate = 0.9999  # decay rate
+eps = 0.9  # random exploration
+gma = 0.95  # gamma (how much it looks ahead)
+decay_rate = 0.999999  # decay rate
+
+epis = 100000  # episodes
+epis_lag = 100  # Lag between updating trickle down iterations
+
 rev_list = []  # rewards per episode
 
 players = [Player(learn=True), Player(), Player(), Player()]
 
 
 # %%
-logger.info('Running %a episodes.' % epis)
+start = time.time()
+logger.info('Running %a episodes with trickling every %a episodes.' % (epis, epis_lag))
 for game in range(epis):
     logger.debug('#--- EPISODE ' + str(game) + '---#')
     for p in players:
@@ -65,7 +69,7 @@ for game in range(epis):
 
         # See if any player has the same card as the one played
         if discard is not None:
-            # They have choosen a card and swapped one out
+            # They have chosen a card and swapped one out
             for player in players:
                 if discard in player.hand:
                     player.hand[player.hand.index(discard)] = 0
@@ -81,6 +85,18 @@ for game in range(epis):
             logger.debug('Last round')
 
             # Find who has the lowest score
-            scores = [p.score() for p in players]
+            for p in players:
+                score = p.score()
+                p.learn(s, a, new_s, r=score, lr=lr, gma=gma)  # How good it was to be in this state
             done = True
 
+    # After the round pass onto next system
+    if epis % epis_lag == 0:
+        logger.debug('Trickling down q table')
+        # Player 1 => Player 2 => Player 3 => Player 4
+        players[3].Q = players[2].Q
+        players[2].Q = players[1].Q
+        players[1].Q = players[0].Q
+
+logger.info('Done.')
+logger.info('Took %a seconds.' % ((start-time.time()).__round__(2)))

@@ -64,7 +64,7 @@ class Player():
 
     def score(self):
         # Make more complex
-        return np.sum(self.hand)
+        return np.sum(self.hand)*-1
 
     def choice(self, s, eps=0.5):
         # Make a choice of action depending on the state

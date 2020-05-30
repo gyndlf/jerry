@@ -13,9 +13,11 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 from blackjack.blackjack import Blackjack
+from dutch.dutch import Dutch
 from cards.eyes import Eyes
 
 blackjack = Blackjack()
+dutch = Dutch()
 eyes = Eyes()
 
 while True:

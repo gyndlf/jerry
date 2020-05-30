@@ -7,7 +7,7 @@ import numpy as np
 import time
 import logging
 
-logger = logging.getLogger('dutch')
+logger = logging.getLogger('dutch-gen')
 logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch = logging.StreamHandler()

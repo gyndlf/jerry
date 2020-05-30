@@ -37,7 +37,6 @@ class Dutch:
         hand.append(self.draw_card(msg='[3] : '))
         hand.append(self.draw_card(msg='[4] : '))
         self.hand = hand
-        return hand
 
     def gen_state(self):
         self.card = self.draw_card()  # this is the potential card (get rid of list)
@@ -74,6 +73,7 @@ class Dutch:
         return self.gen_state(), discard, done
 
     def run_round(self):
+        self.gen_hand()
         done = False
         s = self.gen_state()
         while not done:

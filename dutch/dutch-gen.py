@@ -61,7 +61,6 @@ for game in range(epis):
 
         # Choose state
         a = players[turn].choice(s, eps=eps)
-
         new_s, discard, end = players[turn].step(a)
 
         # Update the Q table
@@ -83,9 +82,11 @@ for game in range(epis):
         if end:
             # Just run one last round (bypass the normal round system)
             logger.debug('Last round')
-
             # Find who has the lowest score
             for p in players:
+                s = p.gen_state()
+                a = p.choice(s, eps=eps)
+                new_s, discard, end = p.step(a)
                 score = p.score()
                 p.learn(s, a, new_s, r=score, lr=lr, gma=gma)  # How good it was to be in this state
             done = True

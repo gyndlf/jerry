@@ -1,8 +1,7 @@
 # d6644
 # Class file to run the all Dutch necessary actions
-
-# d6623
-# Class file for blackjack to run all the necessary algorithms
+# TODO
+#  - Add support to follow each card (allowing discards)
 
 import numpy as np
 import os
@@ -17,6 +16,7 @@ class Dutch:
         self.Q = np.load(os.path.join(self.base, 'q-table.npy'))  # Adjust for use
         self.eyes = eyes
         self.hand = None
+        self.actual_hand = None
 
         logger.debug('Using qtable at %a' % os.path.join(self.base, 'q-table.npy'))
 
@@ -36,6 +36,7 @@ class Dutch:
         hand.append(self.draw_card(msg='[2] : '))
         hand.append(self.draw_card(msg='[3] : '))
         hand.append(self.draw_card(msg='[4] : '))
+        self.actual_hand = hand.copy()  # Otherwise changes (sorting) are synced
         self.hand = hand
 
     def gen_state(self):
@@ -54,11 +55,14 @@ class Dutch:
         assert 0 <= action <= 6
         discard = None
         if action < 4:
-            logger.info('CHOICE: Swapping with card %a' % action)
             # Then swap with card 1 etc
             discard = self.hand[action]
             self.hand[action] = self.card
+            inx = self.actual_hand.index(discard)
+            self.actual_hand[inx] = self.card
             done = False
+            logger.info('CHOICE: Swapping %a with %a.' % (self.card, discard))
+            logger.info('CHOICE: This is card index %a.' % inx)
         elif action == 4:
             # Then don't choose the card
             logger.info('CHOICE: Not choosing the card')

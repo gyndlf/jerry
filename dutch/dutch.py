@@ -25,7 +25,7 @@ gma = 0.95  # gamma (how much it looks ahead)
 decay_rate = 0.999999  # decay rate
 
 epis = 100000  # episodes
-epis_lag = 100  # Lag between updating trickle down iterations
+epis_lag = 5000  # Lag between updating trickle down iterations
 
 rev_list = []  # rewards per episode
 
@@ -91,12 +91,14 @@ for game in range(epis):
             done = True
 
     # After the round pass onto next system
-    if epis % epis_lag == 0:
+    if game % epis_lag == 0:
         logger.debug('Trickling down q table')
+        logger.info('At episode %a.' % game)
         # Player 1 => Player 2 => Player 3 => Player 4
         players[3].Q = players[2].Q
         players[2].Q = players[1].Q
         players[1].Q = players[0].Q
 
 logger.info('Done.')
-logger.info('Took %a seconds.' % ((start-time.time()).__round__(2)))
+logger.info('Took %a seconds.' % ((time.time()-start).__round__(2)))
+np.save('q-table.npy', players[0].Q)

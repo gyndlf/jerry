@@ -74,7 +74,7 @@ class Dutch:
             done = True
         else:
             raise IndexError('welp')
-        return self.gen_state(), discard, done
+        return discard, done
 
     def run_round(self):
         self.gen_hand()
@@ -85,7 +85,7 @@ class Dutch:
                 # Then compute the round
                 s = self.gen_state()
                 a = self.choice(s)
-                s, discard, done = self.step(a)
+                discard, done = self.step(a)
             elif msg is 'n' or msg == 'N':
                 # Then maybe we can chuck out a card
                 logger.info('Looking for discarded')

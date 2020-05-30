@@ -18,16 +18,15 @@ logger.addHandler(ch)
 logger.warning('Dutch is not fully implimented. This extends towards the following')
 logger.warning('- Jack and Queen dont allow you to steal / look at cards')
 logger.warning('- There is no final round after someone calls Dutch')
+logger.warning('- There are no hidden cards (Players see all cards at the start)')
 
 lr = 0.01  # learning rate
 eps = 0.9  # random exploration
 gma = 0.95  # gamma (how much it looks ahead)
-decay_rate = 0.999999  # decay rate
+decay_rate = 0.99999  # decay rate
 
-epis = 100000  # episodes
-epis_lag = 5000  # Lag between updating trickle down iterations
-
-rev_list = []  # rewards per episode
+epis = 1000000  # episodes
+epis_lag = 10000  # Lag between updating trickle down iterations
 
 players = [Player(learn=True), Player(), Player(), Player()]
 
@@ -35,7 +34,7 @@ players = [Player(learn=True), Player(), Player(), Player()]
 # %%
 start = time.time()
 logger.info('Running %a episodes with trickling every %a episodes.' % (epis, epis_lag))
-for game in range(epis):
+for game in range(1, epis):
     logger.debug('#--- EPISODE ' + str(game) + '---#')
     for p in players:
         p.reset()
@@ -94,7 +93,8 @@ for game in range(epis):
     # After the round pass onto next system
     if game % epis_lag == 0:
         logger.debug('Trickling down q table')
-        logger.info('At episode %a.' % game)
+        est = ((time.time()-start)/game * (epis-game)).__round__(2)
+        logger.info('At episode %a. Est %a seconds remaining.' % (game, est))
         # Player 1 => Player 2 => Player 3 => Player 4
         players[3].Q = players[2].Q
         players[2].Q = players[1].Q

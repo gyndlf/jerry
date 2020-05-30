@@ -74,7 +74,10 @@ class Player():
             logger.debug('RANDOM ACTION')
             a = np.random.randint(0, 6)  # random choice
         else:
-            a = np.argmax(self.Q[s[0], s[1], s[2], s[3], s[4]])
+            m = np.max(self.Q[s[0], s[1], s[2], s[3], s[4]])
+            i = np.where(self.Q[s[0], s[1], s[2], s[3], s[4]] == m)[0]
+            #a = np.argmax(self.Q[s[0], s[1], s[2], s[3], s[4]])
+            a = np.random.choice(i)
             logger.debug('Q ACTION OF %a' % a)
         return a
 

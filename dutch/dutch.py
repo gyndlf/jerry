@@ -79,11 +79,24 @@ class Dutch:
     def run_round(self):
         self.gen_hand()
         done = False
-        s = self.gen_state()
         while not done:
-            a = self.choice(s)
-            s, discard, done = self.step(a)
-
+            msg = input('Is my turn? (y/n) : ')
+            if msg is 'y' or msg == 'Y':
+                # Then compute the round
+                s = self.gen_state()
+                a = self.choice(s)
+                s, discard, done = self.step(a)
+            elif msg is 'n' or msg == 'N':
+                # Then maybe we can chuck out a card
+                logger.info('Looking for discarded')
+                card = self.draw_card(msg='[:] : ')
+                if card in self.hand:
+                    # Then lets discard
+                    logger.info('CHOICE: Discarding %a with index of %a' % (card, self.actual_hand.index(card)))
+                    self.hand[self.hand.index(card)] = 0
+                    self.actual_hand[self.actual_hand.index(card)] = 0
+            else:
+                raise ValueError('Ahhhhh nope.')
 
 
 

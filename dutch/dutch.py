@@ -15,20 +15,24 @@ ch = logging.StreamHandler()
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
+logger.warning('Dutch is not fully implimented. This extends towards the following')
+logger.warning('- Jack and Queen dont allow you to steal / look at cards')
+logger.warning('- There is no final round after someone calls Dutch')
+
 lr = 0.01  # learning rate
 eps = 0.5  # random exploration
 gma = 0.9  # gamma
-epis = 10000000  # episodes
+epis = 5  # episodes
 decay_rate = 0.9999  # decay rate
 rev_list = []  # rewards per episode
 
-players = [Player(), Player(), Player(), Player()]
+players = [Player(learn=True), Player(), Player(), Player()]
 
 
 # %%
-logger.info('Running %a game.' % epis)
+logger.info('Running %a episodes.' % epis)
 for game in range(epis):
-    logger.debug('#--- GAME ' + str(game) + '---#')
+    logger.debug('#--- EPISODE ' + str(game) + '---#')
     for p in players:
         p.reset()
     turn = np.random.randint(4)
@@ -52,24 +56,19 @@ for game in range(epis):
         logger.debug('State of %a' % s)
 
         # Choose state
-        q = players[turn].Q
-        logger.debug('Q table %a' % q[s[0], s[1], s[2], s[3], s[4]])
-        if np.random.random() < eps or np.sum(q[s[0], s[1], s[2], s[3], s[4]]) is 0:
-            logger.debug('RANDOM ACTION')
-            a = np.random.randint(0, 5)  # random choice
-        else:
-            logger.debug('Q table action')
-            a = np.argmax(q[s[0], s[1], s[2], s[3], s[4]])
+        a = players[turn].choice(s, eps=eps)
 
-        new_s, reward, end = players[turn].step(a)
+        new_s, discard, end = players[turn].step(a)
 
         # Update the Q table
-        q[s[0], s[1], s[2], s[3], s[4], a] = \
-            q[s[0], s[1], s[2], s[3], s[4], a] + \
-            lr*(reward + gma*np.max(q[new_s[0], new_s[1], new_s[2], new_s[3], new_s[4], :]) -
-                q[s[0], s[1], s[2], s[3], s[4], a])
+        players[turn].learn(s, a, new_s, r=0, lr=lr, gma=gma)  # No reward
 
-        players[turn].Q = q  # Save it
+        # See if any player has the same card as the one played
+        if discard is not None:
+            # They have choosen a card and swapped one out
+            for player in players:
+                if discard in player.hand:
+                    player.hand[player.hand.index(discard)] = 0
 
         # Update the turn counter
         turn += 1
@@ -80,5 +79,8 @@ for game in range(epis):
         if end:
             # Just run one last round (bypass the normal round system)
             logger.debug('Last round')
+
+            # Find who has the lowest score
+            scores = [p.score() for p in players]
             done = True
 

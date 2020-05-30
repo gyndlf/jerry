@@ -14,7 +14,6 @@ class Blackjack:
         self.Q = np.load(os.path.join(self.base, 'q-table.npy'))
 
         logger.debug('Using qtable at %a' % os.path.join(self.base, 'q-table.npy'))
-        logger.debug('qtable shape of %a' % str(self.Q.shape))
 
     def usable_ace(self, hand):  # Can we play an ace?
         return 1 in hand and sum(hand) + 10 <= 21

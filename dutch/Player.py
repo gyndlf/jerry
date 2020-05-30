@@ -11,15 +11,17 @@ import numpy as np
 import logging
 import random
 
-logger = logging.getLogger('dutch.environment')
+logger = logging.getLogger('dutch.Player')
 
 
 class Player():
-    def __init__(self):
+    def __init__(self, learn=False):
         logger.info('Dutch engine initilised')
         self.hand = self.draw_card(4)  # all cards
         self.card = None
-        self.Q = np.zeros((14,14,14,14,14,6))  # pickup, c1, c2, c3, c4, a
+        self.Q = np.zeros((15,15,15,15,15,6))  # pickup, c1, c2, c3, c4, a
+        self.teach = learn  # If it should update the Q table or not
+        # Special: 0=none, 14=hidden, 1-13=cards
 
     def draw_card(self, num_cards=1):
         cards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
@@ -33,36 +35,61 @@ class Player():
         logger.debug(self.hand)
 
     def gen_state(self):
-        self.card = self.draw_card()  # this is the potential card
-        # TODO:
-        #  Sort hand so that the lowest card is always first
-        return self.card + self.hand
+        self.card = self.draw_card()[0]  # this is the potential card (get rid of list)
+        self.hand.sort()  # to combine states in the end
+        return [self.card] + self.hand
 
     def step(self, action):
         assert 0 <= action <= 6
+        discard = None
         if action < 4:
+            logger.debug('Swapping with card %a' % action)
             # Then swap with card 1 etc
+            discard = self.hand[action]
             self.hand[action] = self.card
             done = False
-
         elif action == 4:
             # Then don't choose the card
+            logger.debug('Not choosing the card')
+            discard = self.card
             done = False
-
         elif action == 5:
             # Then call dutch
+            logger.debug('Calling dutch')
             done = True
-
         else:
             raise IndexError('welp')
 
-        reward = 0
+        return self.gen_state(), discard, done
 
-        return self.gen_state(), reward, done
+    def score(self):
+        # Make more complex
+        return np.sum(self.hand)
+
+    def choice(self, s, eps=0.5):
+        # Make a choice of action depending on the state
+        # Either use the q table or random
+        logger.debug('Q table %a' % self.Q[s[0], s[1], s[2], s[3], s[4], :])
+        if np.random.random() < eps or np.sum(self.Q[s[0], s[1], s[2], s[3], s[4], :]) == 0.:
+            logger.debug('RANDOM ACTION')
+            a = np.random.randint(0, 6)  # random choice
+        else:
+            a = np.argmax(self.Q[s[0], s[1], s[2], s[3], s[4]])
+            logger.debug('Q ACTION OF %a' % a)
+        return a
+
+    def learn(self, s, a, new_s, r, lr=0.01, gma=0.9):
+        if self.teach:
+            logger.debug('Learning....')
+            # Update the q table
+            self.Q[s[0], s[1], s[2], s[3], s[4], a] = \
+                self.Q[s[0], s[1], s[2], s[3], s[4], a] + \
+                lr*(r + gma*np.max(self.Q[new_s[0], new_s[1], new_s[2], new_s[3], new_s[4], :]) -
+                    self.Q[s[0], s[1], s[2], s[3], s[4], a])
+
 
     def reset(self):
         # Resetting environment
         logger.debug('Resetting Player.')
-
         self.hand = self.draw_card(4)
 

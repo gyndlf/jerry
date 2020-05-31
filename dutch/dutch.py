@@ -47,7 +47,10 @@ class Dutch:
     def choice(self, s):
         # Make a choice of action depending on the state
         logger.debug('Q table %a' % self.Q[s[0], s[1], s[2], s[3], s[4], :])
-        a = np.argmax(self.Q[s[0], s[1], s[2], s[3], s[4]])
+        m = np.max(self.Q[s[0], s[1], s[2], s[3], s[4]])
+        i = np.where(self.Q[s[0], s[1], s[2], s[3], s[4]] == m)[0]
+        #a = np.argmax(self.Q[s[0], s[1], s[2], s[3], s[4]])
+        a = np.random.choice(i)
         logger.debug('Q ACTION OF %a' % a)
         return a
 
@@ -95,6 +98,8 @@ class Dutch:
                     logger.info('CHOICE: Discarding %a with index of %a' % (card, self.actual_hand.index(card)))
                     self.hand[self.hand.index(card)] = 0
                     self.actual_hand[self.actual_hand.index(card)] = 0
+                else:
+                    logger.info('No matching card.')
             else:
                 raise ValueError('Ahhhhh nope.')
 

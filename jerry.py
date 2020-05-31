@@ -1,12 +1,12 @@
 # d6623
 # This is the main controlling python file. Everything should be used only in class form
 
-print('Jerry v1.2.1')
+print('Jerry v1.2.2')
 print('"I would never lose to a machine" - Felonius Gru')
 
 import logging
 logger = logging.getLogger('jerry')
-logger.setLevel(logging.INFO)  # Set level here
+logger.setLevel(logging.DEBUG)  # Set level here
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch = logging.StreamHandler()
 ch.setFormatter(formatter)

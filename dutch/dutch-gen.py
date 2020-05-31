@@ -87,19 +87,22 @@ for game in range(1, epis):
                 a = p.choice(s, eps=eps)
                 new_s, discard, end = p.step(a)
                 score = p.score()
+                # TODO:
+                #  - Make it being in this state and calling dutch is this good
+                #  - Also make it +10 if you have the lowest score
                 p.learn(s, a, new_s, r=score, lr=lr, gma=gma)  # How good it was to be in this state
             done = True
 
     # After the round pass onto next system
     if game % epis_lag == 0:
         logger.debug('Trickling down q table')
-        est = ((time.time()-start)/game * (epis-game)).__round__(2)
-        logger.info('At episode %a. Est %a seconds remaining.' % (game, est))
+        est = ((time.time()-start)/game * (epis-game)/60).__round__(2)
+        print('\rAt episode %a. Est %a mins remaining.' % (game, est), end='')
         # Player 1 => Player 2 => Player 3 => Player 4
         players[3].Q = players[2].Q
         players[2].Q = players[1].Q
         players[1].Q = players[0].Q
 
-logger.info('Done.')
-logger.info('Took %a seconds.' % ((time.time()-start).__round__(2)))
+logger.info('\nDone.')
+logger.info('Took %a mins.' % (((time.time()-start)/60).__round__(2)))
 np.save('q-table.npy', players[0].Q)

@@ -1,7 +1,5 @@
 # d6644
 # Class file to run the all Dutch necessary actions
-# TODO
-#  - Add support to follow each card (allowing discards)
 
 import numpy as np
 import os
@@ -102,6 +100,25 @@ class Dutch:
                     logger.info('No matching card.')
             else:
                 raise ValueError('Ahhhhh nope.')
+
+
+if __name__ == '__main__':
+    logger = logging.getLogger('dutch')
+    logger.setLevel(logging.DEBUG)  # Set level here
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    ch = logging.StreamHandler()
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
+
+    class Eyes:
+        def read(self):
+            l = input('{Enter card Number}\n')
+            return None, int(l)
+
+    logger.info('Running local sim')
+    dutch = Dutch(Eyes())
+    logger.warning('Just ignore lines like [.]. Only enter cards when told')
+    dutch.run_round()
 
 
 

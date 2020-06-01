@@ -22,6 +22,8 @@ dutch = Dutch(eyes=eyes)
 
 while True:
     # Get the inputed cards
-    logger.info('Begin Dutch')
+    logger.info('Begin dutch')
+    #cards = blackjack.gen_hand(eyes)
+    #blackjack.run_round(eyes, cards)
     dutch.run_round()
     logger.info('end')

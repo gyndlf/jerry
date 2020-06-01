@@ -90,6 +90,7 @@ for game in range(1, epis):
                 # TODO:
                 #  - Make it being in this state and calling dutch is this good
                 #  - Also make it +10 if you have the lowest score
+                #  - Make it so if you call dutch you only update the q table once
                 p.learn(s, a, new_s, r=score, lr=lr, gma=gma)  # How good it was to be in this state
             done = True
 

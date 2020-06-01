@@ -84,10 +84,11 @@ for game in range(1, epis+1):
         if discard is not None:
             # They have chosen a card and swapped one out
             for i, p in enumerate(players):
-                if discard in p.hand:
-                    logger.debug('Player %a discarding %a' % (i, discard))
-                    p.hand[p.hand.index(discard)] = 0
-                    p.legacy_reward += 5  # Will get 5 pts for doing that move
+                for card in p.hand:
+                    if discard == card:
+                        logger.debug('Player %a discarding %a' % (i, discard))
+                        p.hand[p.hand.index(discard)] = 0
+                        p.legacy_reward += 5  # Will get 5 pts for doing that move
 
         players[turn].old_state = s
         players[turn].old_action = a

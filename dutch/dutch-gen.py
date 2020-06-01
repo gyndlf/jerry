@@ -18,6 +18,13 @@ logger.warning('Dutch is not fully implimented. This extends towards the followi
 logger.warning('- Jack and Queen dont allow you to steal / look at cards')
 logger.warning('- There is no final round after someone calls Dutch')
 logger.warning('- There are no hidden cards (Players see all cards at the start)')
+logger.warning('- You always draw from hidden')
+
+# TODO:
+#  - Beat me
+#  - if you chuck out a card that you have, discard that too
+#  - 5 pts if you get rid of a card slot
+#  - can give it rewards if its total sum is nice and low
 
 lr = 0.01  # learning rate
 eps = 0.9  # random exploration

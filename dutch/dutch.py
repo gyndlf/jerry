@@ -44,6 +44,8 @@ class Dutch:
 
     def choice(self, s):
         # Make a choice of action depending on the state
+        logger.debug('Hand of %a' % self.hand)
+        logger.debug('Real hand of %a' % self.actual_hand)
         logger.debug('Q table %a' % self.Q[s[0], s[1], s[2], s[3], s[4], :])
         m = np.max(self.Q[s[0], s[1], s[2], s[3], s[4]])
         i = np.where(self.Q[s[0], s[1], s[2], s[3], s[4]] == m)[0]

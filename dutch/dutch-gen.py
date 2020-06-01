@@ -8,7 +8,7 @@ import time
 import logging
 
 logger = logging.getLogger('dutch')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch = logging.StreamHandler()
 ch.setFormatter(formatter)
@@ -24,7 +24,7 @@ eps = 0.9  # random exploration
 gma = 0.95  # gamma (how much it looks ahead)
 decay_rate = 0.99999  # decay rate
 
-epis = 10  # episodes
+epis = 1000000  # episodes
 epis_lag = 10000  # Lag between updating trickle down iterations
 
 players = [Player(learn=True), Player(), Player(), Player(lowest=True)]
@@ -98,12 +98,13 @@ for game in range(1, epis+1):
     if game % epis_lag == 0:
         logger.debug('Trickling down q table')
         est = ((time.time()-start)/game * (epis-game)/60).__round__(2)
-        print('\rAt episode %a. Est %a mins remaining.' % (game, est), end='')
+        print('\rAt episode %a/%a. Est %a mins remaining.' % (game, epis, est), end='')
         # Player 0 => Player 1 => Player 2 => Player 3
         #players[3].Q = players[2].Q
         players[2].Q = players[1].Q
         players[1].Q = players[0].Q
 
-logger.info('\nDone.')
+print()
+logger.info('Done.')
 logger.info('Took %a mins.' % (((time.time()-start)/60).__round__(2)))
 # np.save('q-table.npy', players[0].Q)

@@ -23,8 +23,10 @@ logger.warning('- You always draw from hidden')
 # TODO:
 #  - Beat me
 #  - if you chuck out a card that you have, discard that too
-#  - 5 pts if you get rid of a card slot
 #  - can give it rewards if its total sum is nice and low
+#  - add hidden cards
+#  - add tapping the queen (choosing it from the discard pile and then the card to replace with is the one "looked" at)
+#  - cant swap a card with a zero
 
 lr = 0.01  # learning rate
 eps = 0.9  # random exploration
@@ -64,9 +66,16 @@ for game in range(1, epis+1):
         s = players[turn].gen_state()
         logger.debug('State of %a' % s)
 
+        # See if there are any rewards we need to add on
+        if players[turn].legacy_reward > 0 and players[turn].old_state is not None:
+            logger.debug('Adding reward of %a' % players[turn].legacy_reward)
+            players[turn].learn(players[turn].old_state, players[turn].old_action, s,
+                                r=players[turn].legacy_reward, lr=lr, gma=gma)
+            players[turn].legacy_reward = 0
+
         # Choose state
         a = players[turn].choice(s, eps=eps)
-        new_s, discard, end = players[turn].step(a)
+        new_s, discard, done = players[turn].step(a)
 
         # Update the Q table
         players[turn].learn(s, a, new_s, r=0, lr=lr, gma=gma)  # No reward
@@ -74,35 +83,38 @@ for game in range(1, epis+1):
         # See if any player has the same card as the one played
         if discard is not None:
             # They have chosen a card and swapped one out
-            for player in players:
-                if discard in player.hand:
-                    player.hand[player.hand.index(discard)] = 0
+            for i, p in enumerate(players):
+                if discard in p.hand:
+                    logger.debug('Player %a discarding %a' % (i, discard))
+                    p.hand[p.hand.index(discard)] = 0
+                    p.legacy_reward += 5  # Will get 5 pts for doing that move
+
+        players[turn].old_state = s
+        players[turn].old_action = a
 
         # Update the turn counter
         turn += 1
         if turn > 3:
             turn -= 4  # Loop back around
 
-        if end:
-            # Just run one last round (bypass the normal round system)
-            logger.debug('Game over.')
-            # Find who has the lowest score
-            scores = [p.score() for p in players]
-            winner = scores.index(max(scores))  # Who got the lowest score (points are negative)
-            logger.debug('Scores of %a' % scores)
-            logger.debug('Player %a won!' % winner)
-            for i, p in enumerate(players):
-                s = p.gen_state()
-                # a = p.choice(s, eps=eps)  # Overwritten with 4 for calling dutch
-                new_s, discard, end = p.step(5)
-                score = p.score()
-                if i == winner:
-                    score += 10  # Bonus points for getting the lowest score
-                p.learn(s, 5, new_s, r=score, lr=lr, gma=gma)  # How good it was to be in this state
-            done = True
+    # Just run one last round (bypass the normal round system)
+    logger.debug('Game over.')
+    # Find who has the lowest score
+    scores = [p.score() for p in players]
+    winner = scores.index(max(scores))  # Who got the lowest score (points are negative)
+    scores[winner] += 15  # Bonus points for lowest score
+    logger.debug('Scores of %a' % scores)
+    logger.debug('Player %a won!' % winner)
+    for i, p in enumerate(players):
+        s = p.gen_state()
+        # a = p.choice(s, eps=eps)  # Overwritten with 4 for calling dutch
+        new_s, discard, end = p.step(5)
+        score = p.score()
+        p.learn(s, 5, new_s, r=score, lr=lr, gma=gma)  # How good it was to be in this state
 
     # After the round pass onto next system
     if game % epis_lag == 0:
+        logger.setLevel(logging.DEBUG)
         logger.debug('Trickling down q table')
         est = ((time.time()-start)/game * (epis-game)/60).__round__(2)
         print('\rAt episode %a/%a. Est %a mins remaining.' % (game, epis, est), end='')

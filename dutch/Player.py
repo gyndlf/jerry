@@ -22,6 +22,9 @@ class Player():
         self.Q = np.zeros((15,15,15,15,15,6))  # pickup, c1, c2, c3, c4, a
         self.teach = learn  # If it should update the Q table or not
         self.lowest = lowest
+        self.legacy_reward = 0  # How many reward points (losing points) that action ended up being
+        self.old_state = None  # Then compute from old state
+        self.old_action = None
         # Special: 0=none, 14=hidden, 1-13=cards
 
     def draw_card(self, num_cards=1):
@@ -69,6 +72,7 @@ class Player():
 
     def choice(self, s, eps=0.5):
         # Make a choice of action depending on the state
+        logger.debug('Hand of %a' % self.hand)
         if self.lowest:
             # Nonlearning system of always choosing the lowest one
             # Never calls dutch
@@ -104,4 +108,8 @@ class Player():
         # Resetting environment
         logger.debug('Resetting Player.')
         self.hand = self.draw_card(4)
+        self.discard = None
+        self.legacy_reward = 0
+        self.old_state = None
+        self.old_action = None
 

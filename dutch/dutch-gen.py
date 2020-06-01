@@ -7,11 +7,10 @@ import numpy as np
 import time
 import logging
 
-logger = logging.getLogger('dutch-gen')
-logger.setLevel(logging.INFO)
+logger = logging.getLogger('dutch')
+logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch = logging.StreamHandler()
-#ch.setLevel(logging.INFO)  # Set the level here
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
@@ -25,21 +24,20 @@ eps = 0.9  # random exploration
 gma = 0.95  # gamma (how much it looks ahead)
 decay_rate = 0.99999  # decay rate
 
-epis = 1000000  # episodes
+epis = 10  # episodes
 epis_lag = 10000  # Lag between updating trickle down iterations
 
-players = [Player(learn=True), Player(), Player(), Player()]
+players = [Player(learn=True), Player(), Player(), Player(lowest=True)]
 
 
 # %%
 start = time.time()
 logger.info('Running %a episodes with trickling every %a episodes.' % (epis, epis_lag))
-for game in range(1, epis):
+for game in range(1, epis+1):
     logger.debug('#--- EPISODE ' + str(game) + '---#')
     for p in players:
         p.reset()
-    turn = np.random.randint(4)
-    logger.debug('Turn %a' % turn)
+    turn = np.random.randint(4)  # random player to start
     done = False
     eps *= decay_rate  # slow the random exploration
 
@@ -53,6 +51,7 @@ for game in range(1, epis):
         # (Q table modification if applicable)
         # Change new state, to current state
         # Compute points
+        logger.debug('Turn %a' % turn)
 
         # Generate state
         s = players[turn].gen_state()
@@ -76,22 +75,23 @@ for game in range(1, epis):
         turn += 1
         if turn > 3:
             turn -= 4  # Loop back around
-        logger.debug('Turn %a' % turn)
 
         if end:
             # Just run one last round (bypass the normal round system)
-            logger.debug('Last round')
+            logger.debug('Game over.')
             # Find who has the lowest score
-            for p in players:
+            scores = [p.score() for p in players]
+            winner = scores.index(max(scores))  # Who got the lowest score (points are negative)
+            logger.debug('Scores of %a' % scores)
+            logger.debug('Player %a won!' % winner)
+            for i, p in enumerate(players):
                 s = p.gen_state()
-                a = p.choice(s, eps=eps)
-                new_s, discard, end = p.step(a)
+                # a = p.choice(s, eps=eps)  # Overwritten with 4 for calling dutch
+                new_s, discard, end = p.step(5)
                 score = p.score()
-                # TODO:
-                #  - Make it being in this state and calling dutch is this good
-                #  - Also make it +10 if you have the lowest score
-                #  - Make it so if you call dutch you only update the q table once
-                p.learn(s, a, new_s, r=score, lr=lr, gma=gma)  # How good it was to be in this state
+                if i == winner:
+                    score += 10  # Bonus points for getting the lowest score
+                p.learn(s, 5, new_s, r=score, lr=lr, gma=gma)  # How good it was to be in this state
             done = True
 
     # After the round pass onto next system
@@ -99,11 +99,11 @@ for game in range(1, epis):
         logger.debug('Trickling down q table')
         est = ((time.time()-start)/game * (epis-game)/60).__round__(2)
         print('\rAt episode %a. Est %a mins remaining.' % (game, est), end='')
-        # Player 1 => Player 2 => Player 3 => Player 4
-        players[3].Q = players[2].Q
+        # Player 0 => Player 1 => Player 2 => Player 3
+        #players[3].Q = players[2].Q
         players[2].Q = players[1].Q
         players[1].Q = players[0].Q
 
 logger.info('\nDone.')
 logger.info('Took %a mins.' % (((time.time()-start)/60).__round__(2)))
-np.save('q-table.npy', players[0].Q)
+# np.save('q-table.npy', players[0].Q)

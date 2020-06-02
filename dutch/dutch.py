@@ -61,6 +61,15 @@ class Dutch:
             if self.hand[action] == 0:
                 # They are trying to discard a zero
                 discard = self.card
+            elif self.card == 12:
+                # There is a queen visible that they are trying to "take"
+                discard = self.card
+                if self.hand[action] == 14:
+                    # They are trying to look at a hidden hand, so see what it is
+                    logger.debug('Override - Looking at hidden card %a' % action)
+                    self.hand[action] = self.draw_card()[0]
+                else:
+                    logger.debug('Looking at card %a which i already know' % action)
             elif self.hand[action] == 14:
                 # They are discarding a hidden card, so discard the actual card
                 logger.info('Discarding hidden card, so please enter what it was')

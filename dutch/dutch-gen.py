@@ -22,15 +22,15 @@ logger.warning('- You always draw from hidden')
 # TODO:
 #  - Beat me
 #  - can give it rewards if its total sum is nice and low
-#  - add hidden cards
 #  - add tapping the queen (choosing it from the discard pile and then the card to replace with is the one "looked" at)
+#  - add support to draw from either the discard or hidden
 
 lr = 0.01  # learning rate
 eps = 0.9  # random exploration
 gma = 0.95  # gamma (how much it looks ahead)
 decay_rate = 0.99999  # decay rate
 
-epis = 1  # episodes
+epis = 20  # episodes
 epis_lag = 1000  # Lag between updating trickle down iterations
 
 players = [Player(learn=True), Player(), Player(), Player(lowest=True)]
@@ -126,4 +126,4 @@ for game in range(1, epis+1):
 print()
 logger.info('Done.')
 logger.info('Took %a mins.' % (((time.time()-start)/60).__round__(2)))
-# np.save('q-table.npy', players[0].Q)
+#np.save('q-table.npy', players[0].Q)

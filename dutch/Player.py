@@ -55,6 +55,14 @@ class Player():
             if self.hand[action] == 0:
                 # They are trying to discard a zero
                 discard = self.card
+            elif self.card == 12:
+                # There is a queen visible that they are trying to "take"
+                discard = self.card
+                if self.hand[action] == 14:
+                    logger.debug('-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
+                    # They are trying to look at a hidden hand, so see what it is
+                    self.hand[action] = self.draw_card()[0]
+                    logger.debug('Override - Looking at hidden card %a' % action)
             elif self.hand[action] == 14:
                 # They are discarding a hidden card, so discard the actual card
                 discard = self.draw_card()  # Discard a random card
@@ -82,7 +90,6 @@ class Player():
     def score(self):
         # Make more complex
         hidden = self.hand.count(14)  # Number of hidden cards
-        print(hidden)
         sc = 0
         for i in range(hidden):
             sc += self.draw_card()[0]

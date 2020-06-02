@@ -8,29 +8,29 @@ import time
 import logging
 
 logger = logging.getLogger('dutch')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch = logging.StreamHandler()
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 logger.warning('Dutch is not fully implimented. This extends towards the following')
-logger.warning('- Jack and Queen dont allow you to steal / look at cards')
+logger.warning('- Jack dont allow you to steal (Does nothing)')
 logger.warning('- There is no final round after someone calls Dutch')
-logger.warning('- You always draw from hidden')
 
 # TODO:
 #  - Beat me
 #  - can give it rewards if its total sum is nice and low
-#  - match dutch.py to match Player.py in how you can pick from discarded
+#  - update dutch.py with a changing indexing system
+#  - track wins on training on a nice graph
 
-lr = 0.01  # learning rate
-eps = 0.9  # random exploration
-gma = 0.95  # gamma (how much it looks ahead)
+lr = 0.001  # learning rate
+eps = 0.8  # random exploration
+gma = 0.8  # gamma (how much it looks ahead)
 decay_rate = 0.99999  # decay rate
 
-epis = 20  # episodes
-epis_lag = 1000  # Lag between updating trickle down iterations
+epis = 500000  # episodes
+epis_lag = 5000  # Lag between updating trickle down iterations
 
 players = [Player(learn=True), Player(), Player(), Player(lowest=True)]
 
@@ -85,7 +85,6 @@ for game in range(1, epis+1):
         if a == 4:
             # They actually did not pickup the card, so we can run this all again, but from a hidden point of view
             logger.debug('Computing from hidden stack (Discard not picked)')
-            logger.debug('---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
             s = players[turn].gen_state()
             logger.debug('State of %a' % s)
 
@@ -145,4 +144,4 @@ for game in range(1, epis+1):
 print()
 logger.info('Done.')
 logger.info('Took %a mins.' % (((time.time()-start)/60).__round__(2)))
-#np.save('q-table.npy', players[0].Q)
+np.save('q-table.npy', players[0].Q)

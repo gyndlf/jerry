@@ -28,7 +28,6 @@ class Player():
         # Special: 0=none, 14=hidden, 1-13=cards
 
     def draw_hand(self):
-        print('drawh')
         return self.draw_card(2) + [14, 14]
 
     def draw_card(self, num_cards=1):
@@ -64,7 +63,6 @@ class Player():
                 # There is a queen visible that they are trying to "take"
                 discard = self.card
                 if self.hand[action] == 14:
-                    logger.debug('-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
                     # They are trying to look at a hidden hand, so see what it is
                     self.hand[action] = self.draw_card()[0]
                     logger.debug('Override - Looking at hidden card %a' % action)

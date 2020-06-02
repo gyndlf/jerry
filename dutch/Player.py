@@ -17,15 +17,18 @@ logger = logging.getLogger('dutch.Player')
 class Player():
     def __init__(self, learn=False, lowest=False):
         logger.info('Dutch engine initilised')
-        self.hand = self.draw_card(4)  # all cards
+        self.hand = self.draw_hand()  # 2 cards, plus two hidden cards
         self.card = None
-        self.Q = np.zeros((15,15,15,15,15,6))  # pickup, c1, c2, c3, c4, a
+        self.Q = np.zeros((14,15,15,15,15,6))  # pickup, c1, c2, c3, c4, a  (14=hidden card)
         self.teach = learn  # If it should update the Q table or not
         self.lowest = lowest
         self.legacy_reward = 0  # How many reward points (losing points) that action ended up being
         self.old_state = None  # Then compute from old state
         self.old_action = None
         # Special: 0=none, 14=hidden, 1-13=cards
+
+    def draw_hand(self):
+        return self.draw_card(2) + [14, 14]
 
     def draw_card(self, num_cards=1):
         cards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
@@ -52,6 +55,10 @@ class Player():
             if self.hand[action] == 0:
                 # They are trying to discard a zero
                 discard = self.card
+            elif self.hand[action] == 14:
+                # They are discarding a hidden card, so discard the actual card
+                discard = self.draw_card()  # Discard a random card
+                self.hand[action] = self.card
             else:
                 discard = self.hand[action]
                 self.hand[action] = self.card
@@ -74,7 +81,12 @@ class Player():
 
     def score(self):
         # Make more complex
-        return np.sum(self.hand)*-1
+        hidden = self.hand.count(14)  # Number of hidden cards
+        print(hidden)
+        sc = 0
+        for i in range(hidden):
+            sc += self.draw_card()[0]
+        return (sc + np.sum(self.hand) - 14*hidden)*-1  # Minus off the hidden pts
 
     def choice(self, s, eps=0.5):
         # Make a choice of action depending on the state
@@ -113,7 +125,7 @@ class Player():
     def reset(self):
         # Resetting environment
         logger.debug('Resetting Player.')
-        self.hand = self.draw_card(4)
+        self.hand = self.draw_hand()
         self.discard = None
         self.legacy_reward = 0
         self.old_state = None

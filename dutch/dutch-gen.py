@@ -8,7 +8,7 @@ import time
 import logging
 
 logger = logging.getLogger('dutch')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch = logging.StreamHandler()
 ch.setFormatter(formatter)
@@ -17,7 +17,6 @@ logger.addHandler(ch)
 logger.warning('Dutch is not fully implimented. This extends towards the following')
 logger.warning('- Jack and Queen dont allow you to steal / look at cards')
 logger.warning('- There is no final round after someone calls Dutch')
-logger.warning('- There are no hidden cards (Players see all cards at the start)')
 logger.warning('- You always draw from hidden')
 
 # TODO:
@@ -31,7 +30,7 @@ eps = 0.9  # random exploration
 gma = 0.95  # gamma (how much it looks ahead)
 decay_rate = 0.99999  # decay rate
 
-epis = 10000  # episodes
+epis = 1  # episodes
 epis_lag = 1000  # Lag between updating trickle down iterations
 
 players = [Player(learn=True), Player(), Player(), Player(lowest=True)]
@@ -83,7 +82,8 @@ for game in range(1, epis+1):
             # They have chosen a card and swapped one out
             for i, p in enumerate(players):
                 for card in p.hand:
-                    if discard == card:
+                    if discard == card:  # Cant discard the 14!
+                        assert discard != 14
                         logger.debug('Player %a discarding %a' % (i, discard))
                         p.hand[p.hand.index(discard)] = 0
                         p.legacy_reward += 5  # Will get 5 pts for doing that move
@@ -102,14 +102,14 @@ for game in range(1, epis+1):
     # Find who has the lowest score
     scores = [p.score() for p in players]
     winner = scores.index(max(scores))  # Who got the lowest score (points are negative)
-    scores[winner] += 15  # Bonus points for lowest score
+    scores[winner] += 10  # Bonus points for lowest score
     logger.debug('Scores of %a' % scores)
     logger.debug('Player %a won!' % winner)
     for i, p in enumerate(players):
         s = p.gen_state()
         # a = p.choice(s, eps=eps)  # Overwritten with 4 for calling dutch
         new_s, discard, end = p.step(5)
-        score = p.score()
+        score = scores[i]
         p.learn(s, 5, new_s, r=score, lr=lr, gma=gma)  # How good it was to be in this state
 
     # After the round pass onto next system

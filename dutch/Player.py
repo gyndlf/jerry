@@ -28,6 +28,7 @@ class Player():
         # Special: 0=none, 14=hidden, 1-13=cards
 
     def draw_hand(self):
+        print('drawh')
         return self.draw_card(2) + [14, 14]
 
     def draw_card(self, num_cards=1):
@@ -41,10 +42,14 @@ class Player():
         logger.debug('--- Current cards ---')
         logger.debug(self.hand)
 
-    def gen_state(self):
-        self.card = self.draw_card()[0]  # this is the potential card (get rid of list)
-        self.hand.sort()  # to combine states in the end
-        return [self.card] + self.hand
+    def gen_state(self, draw=None):
+        self.hand.sort()
+        if draw is None:
+            self.card = self.draw_card()[0]
+            return [self.card] + self.hand  # this is the potential card (get rid of list)
+        else:
+            self.card = draw
+            return [draw] + self.hand
 
     def step(self, action):
         assert 0 <= action <= 6
@@ -71,7 +76,7 @@ class Player():
                 discard = self.hand[action]
                 self.hand[action] = self.card
             done = False
-            assert discard != 0
+            assert discard != 0 or 14
 
         elif action == 4:
             # Then don't choose the card

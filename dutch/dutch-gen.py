@@ -22,8 +22,7 @@ logger.warning('- You always draw from hidden')
 # TODO:
 #  - Beat me
 #  - can give it rewards if its total sum is nice and low
-#  - add tapping the queen (choosing it from the discard pile and then the card to replace with is the one "looked" at)
-#  - add support to draw from either the discard or hidden
+#  - match dutch.py to match Player.py in how you can pick from discarded
 
 lr = 0.01  # learning rate
 eps = 0.9  # random exploration
@@ -46,6 +45,7 @@ for game in range(1, epis+1):
     turn = np.random.randint(4)  # random player to start
     done = False
     eps *= decay_rate  # slow the random exploration
+    table = players[0].draw_card()[0]  # Start with a random card on the table
 
     while not done:  # iterate through each player again and again players
         # sim.print_cards()
@@ -59,10 +59,15 @@ for game in range(1, epis+1):
         # Compute points
         logger.debug('Turn %a' % turn)
 
+        # First compute what to do with the visable card
+        # If action = 4, don't choose the card, draw from hidden
+
+        logger.debug('Computing from visible discarded %a.' % table)
         # Generate state
-        s = players[turn].gen_state()
+        s = players[turn].gen_state(draw=table)  # You "pickup" the current discarded card
         logger.debug('State of %a' % s)
 
+        # Should this be added to the next random state? Does it really matter?????
         # See if there are any rewards we need to add on
         if players[turn].legacy_reward > 0 and players[turn].old_state is not None:
             logger.debug('Adding reward of %a' % players[turn].legacy_reward)
@@ -76,6 +81,20 @@ for game in range(1, epis+1):
 
         # Update the Q table
         players[turn].learn(s, a, new_s, r=0, lr=lr, gma=gma)  # No reward
+
+        if a == 4:
+            # They actually did not pickup the card, so we can run this all again, but from a hidden point of view
+            logger.debug('Computing from hidden stack (Discard not picked)')
+            logger.debug('---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------')
+            s = players[turn].gen_state()
+            logger.debug('State of %a' % s)
+
+            # Choose state
+            a = players[turn].choice(s, eps=eps)
+            new_s, discard, done = players[turn].step(a)
+
+            # Update the Q table
+            players[turn].learn(s, a, new_s, r=0, lr=lr, gma=gma)  # No reward
 
         # See if any player has the same card as the one played
         if discard is not None:

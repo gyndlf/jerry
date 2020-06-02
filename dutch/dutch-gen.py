@@ -22,7 +22,6 @@ logger.warning('- You always draw from hidden')
 
 # TODO:
 #  - Beat me
-#  - if you chuck out a card that you have, discard that too
 #  - can give it rewards if its total sum is nice and low
 #  - add hidden cards
 #  - add tapping the queen (choosing it from the discard pile and then the card to replace with is the one "looked" at)
@@ -88,6 +87,7 @@ for game in range(1, epis+1):
                         logger.debug('Player %a discarding %a' % (i, discard))
                         p.hand[p.hand.index(discard)] = 0
                         p.legacy_reward += 5  # Will get 5 pts for doing that move
+                assert discard not in p.hand
 
         players[turn].old_state = s
         players[turn].old_action = a

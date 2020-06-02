@@ -49,9 +49,15 @@ class Player():
         if action < 4:
             logger.debug('Swapping with card %a' % action)
             # Then swap with card 1 etc
-            discard = self.hand[action]
-            self.hand[action] = self.card
+            if self.hand[action] == 0:
+                # They are trying to discard a zero
+                discard = self.card
+            else:
+                discard = self.hand[action]
+                self.hand[action] = self.card
             done = False
+            assert discard != 0
+
         elif action == 4:
             # Then don't choose the card
             logger.debug('Not choosing the card')

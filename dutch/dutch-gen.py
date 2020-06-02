@@ -26,15 +26,14 @@ logger.warning('- You always draw from hidden')
 #  - can give it rewards if its total sum is nice and low
 #  - add hidden cards
 #  - add tapping the queen (choosing it from the discard pile and then the card to replace with is the one "looked" at)
-#  - cant swap a card with a zero
 
 lr = 0.01  # learning rate
 eps = 0.9  # random exploration
 gma = 0.95  # gamma (how much it looks ahead)
 decay_rate = 0.99999  # decay rate
 
-epis = 1000000  # episodes
-epis_lag = 10000  # Lag between updating trickle down iterations
+epis = 10000  # episodes
+epis_lag = 1000  # Lag between updating trickle down iterations
 
 players = [Player(learn=True), Player(), Player(), Player(lowest=True)]
 
@@ -115,7 +114,7 @@ for game in range(1, epis+1):
 
     # After the round pass onto next system
     if game % epis_lag == 0:
-        logger.setLevel(logging.DEBUG)
+        #logger.setLevel(logging.DEBUG)
         logger.debug('Trickling down q table')
         est = ((time.time()-start)/game * (epis-game)/60).__round__(2)
         print('\rAt episode %a/%a. Est %a mins remaining.' % (game, epis, est), end='')

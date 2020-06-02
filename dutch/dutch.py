@@ -30,10 +30,10 @@ class Dutch:
     def gen_hand(self):
         hand = []
         logger.info('Load each card one at a time')
+        hand.append(self.draw_card(msg='[0] : '))
         hand.append(self.draw_card(msg='[1] : '))
-        hand.append(self.draw_card(msg='[2] : '))
-        hand.append(self.draw_card(msg='[3] : '))
-        hand.append(self.draw_card(msg='[4] : '))
+        logger.info('Assuming the other two cards are hidden.')
+        hand += [14, 14]  # Two hidden cards
         self.actual_hand = hand.copy()  # Otherwise changes (sorting) are synced
         self.hand = hand
 
@@ -58,12 +58,19 @@ class Dutch:
         assert 0 <= action <= 6
         discard = None
         if action < 4:
-            # Then swap with card 1 etc
-            discard = self.hand[action]
-            self.hand[action] = self.card
-            inx = self.actual_hand.index(discard)
-            self.actual_hand[inx] = self.card
+            if self.hand[action] == 0:
+                # They are trying to discard a zero
+                discard = self.card
+            elif self.hand[action] == 14:
+                # They are discarding a hidden card, so discard the actual card
+                logger.info('Discarding hidden card, so please enter what it was')
+                discard = self.draw_card()  # Discard a random card
+                self.hand[action] = self.card
+            else:
+                discard = self.hand[action]
+                self.hand[action] = self.card
             done = False
+            assert discard != 0
             logger.info('CHOICE: Swapping %a with %a.' % (self.card, discard))
             logger.info('CHOICE: This is card index %a.' % inx)
         elif action == 4:
@@ -93,11 +100,12 @@ class Dutch:
                 # Then maybe we can chuck out a card
                 logger.info('Looking for discarded')
                 card = self.draw_card(msg='[:] : ')
-                if card in self.hand:
-                    # Then lets discard
-                    logger.info('CHOICE: Discarding %a with index of %a' % (card, self.actual_hand.index(card)))
-                    self.hand[self.hand.index(card)] = 0
-                    self.actual_hand[self.actual_hand.index(card)] = 0
+                for c in self.hand:
+                    if c == card:
+                        # Then lets discard
+                        logger.info('CHOICE: Discarding %a with index of %a' % (card, self.actual_hand.index(card)))
+                        self.hand[self.hand.index(card)] = 0
+                        self.actual_hand[self.actual_hand.index(card)] = 0
                 else:
                     logger.info('No matching card.')
             else:

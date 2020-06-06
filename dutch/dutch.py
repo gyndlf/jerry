@@ -63,32 +63,42 @@ class Dutch:
     def step(self, action):
         assert 0 <= action <= 6
         discard = None
+        extra = False
         if action < 4:
             if self.hand[action] == 0:
                 # They are trying to discard a zero
-                logger.info('Discarding the card (Tried to discard a zero)')
+                logger.info('CHOICE: Not choosing the card')
+                logger.debug('Discarding the card (Tried to discard a zero)')
                 discard = self.card
+                extra = True  # So we will draw another card
             elif self.card == 12:
                 # There is a queen visible that they are trying to "take"
                 discard = self.card
                 if self.hand[action] == 14:
                     # They are trying to look at a hidden hand, so see what it is
+                    logger.info('CHOICE: Tapping the Queen (on card index %a, as hidden enter it too)' % self.actual_hand.index(self.hand[action]))
                     logger.debug('Override - Looking at hidden card %a' % action)
-                    self.hand[action] = self.draw_card()[0]
+                    n = self.draw_card()
+                    self.actual_hand[self.actual_hand.index(self.hand[action])] = n
+                    self.hand[action] = n
                 else:
                     logger.debug('Looking at card %a which i already know' % action)
+                    extra = True
             elif self.hand[action] == 14:
                 # They are discarding a hidden card, so discard the actual card
-                logger.info('Discarding hidden card, so please enter what it was')
+                logger.info('CHOICE: Swap with index %a (as hidden card, enter it too)' % self.actual_hand.index(self.hand[action]))
+                logger.debug('CHOICE: Swapping %a with %a.' % (self.card, discard))
+                logger.debug('CHOICE: This is card index %a.' % action)
                 discard = self.draw_card()  # Discard a random card
+                self.actual_hand[self.actual_hand.index(self.hand[action])] = self.card
                 self.hand[action] = self.card
-                logger.info('CHOICE: Swapping %a with %a.' % (self.card, discard))
-                logger.info('CHOICE: This is card index %a.' % self.hand.index(self.card))
             else:
                 discard = self.hand[action]
+                self.actual_hand[self.actual_hand.index(self.hand[action])] = self.card
                 self.hand[action] = self.card
-                logger.info('CHOICE: Swapping %a with %a.' % (self.card, discard))
-                logger.info('CHOICE: This is card index %a.' % self.hand.index(self.card))
+                logger.debug('CHOICE: Swapping %a with %a.' % (self.card, discard))
+                logger.debug('CHOICE: This is card index %a.' % self.hand.index(self.card))
+                logger.info('CHOICE: Swap with index %a.' % self.actual_hand.index(self.card))
             self.table = discard
             done = False
             assert discard != 0
@@ -105,55 +115,67 @@ class Dutch:
             done = True
         else:
             raise IndexError('welp')
-        return discard, done
+        return discard, done, extra
+
+    def remove_card(self, discard):
+        for card in self.hand:
+            if discard == card:  # Cant discard the 14!
+                assert discard != 14
+                logger.debug('Discarding %a' % (discard))
+                logger.info('ACTION: Discarding %a; index of %a' % (discard, self.actual_hand.index(discard)))
+                self.hand[self.hand.index(discard)] = 0
+                self.actual_hand.remove(discard)
+                #self.actual_hand[self.actual_hand.index(card)] = 0
 
     def run_round(self):
         self.gen_hand()
+        self.remove_card(self.table)
         done = False
         while not done:
-            msg = input('Is my turn? (y/n) : ')
+            msg = input('\nIs my turn? (y/n) : ')
             if msg is 'y' or msg == 'Y':
                 # Then compute the round
                 s = self.gen_state(draw=self.table)
                 logger.debug('State of %a' % s)
                 a = self.choice(s)
-                discard, done = self.step(a)
-                for card in self.hand:
-                    if discard == card:  # Cant discard the 14!
-                        assert discard != 14
-                        logger.debug('Discarding %a' % (discard))
-                        self.hand[self.hand.index(discard)] = 0
-                        #self.actual_hand[self.actual_hand.index(card)] = 0
-                if a == 4:
+                discard, done, extra = self.step(a)
+                self.remove_card(discard)
+                if a == 4 or extra:
                     # They dont want the card
-                    logger.info('Draw a new card from the pack')
+                    logger.info('CHOICE: Draw a new card')
                     s = self.gen_state()
+                    logger.debug('State of %a' % s)
                     a = self.choice(s)
-                    discard, done = self.step(a)
-                    for card in self.hand:
-                        if discard == card:  # Cant discard the 14!
-                            assert discard != 14
-                            logger.debug('Discarding %a' % (discard))
-                            self.hand[self.hand.index(discard)] = 0
-                            #self.actual_hand[self.actual_hand.index(card)] = 0
+                    discard, done, more = self.step(a)
+                    self.remove_card(discard)
+                    if more:
+                        # They still dont want it (illegal queen tap or discard 0)
+                        logger.info('CHOICE: Not choosing the card')
             elif msg is 'n' or msg == 'N':
                 # Then maybe we can chuck out a card
-                logger.info('Looking for discarded')
+                logger.info('ACTION: Enter discarded card')
                 card = self.draw_card(msg='[:] : ')
                 self.table = card
                 for c in self.hand:
                     if c == card:
                         # Then lets discard
-                        logger.info('CHOICE: Discarding %a with index of %a' % (card, self.hand.index(card)))
+                        logger.debug('CHOICE: Discarding %a with index of %a' % (card, self.hand.index(card)))
+                        logger.info('CHOICE: Discarding %a with real index of %a' % (card, self.actual_hand.index(card)))
                         self.hand[self.hand.index(card)] = 0
+                        self.actual_hand.remove(card)
                         #self.actual_hand[self.actual_hand.index(card)] = 0
             else:
                 raise ValueError('Ahhhhh nope.')
 
+            if len(self.actual_hand) == 0:
+                # Yay! we won!
+                done = True
+                logger.info('WE WON!!!!')
+
 
 if __name__ == '__main__':
     logger = logging.getLogger('dutch')
-    logger.setLevel(logging.DEBUG)  # Set level here
+    logger.setLevel(logging.INFO)  # Set level here
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     ch = logging.StreamHandler()
     ch.setFormatter(formatter)

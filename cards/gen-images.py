@@ -10,7 +10,7 @@
 #   - change file system to match actual layout
 
 values = [1,2,3,4,5,6,7,8,9,10,11,12,13]
-suits = ['clubs', 'hearts', 'spades', 'diamonds']
+suits = ['club', 'heart', 'spade', 'diamond']
 
 import os
 from shutil import copyfile
@@ -28,24 +28,36 @@ else:
     suits_dir = os.path.join(location, 'suits', 'test')
 
 def take_photo(fname='tmp.jpg'):
-    os.system('fswebcam --no-banner %a' % fname)
+    os.system('fswebcam --no-banner %a &> /dev/null' % fname)
 
 done = False
 index = 0
-while not done:
-    command = input('Card value: suit,value\n')
-    args = command.split(',')
-    assert args[0] == 's' or 'h' or 'c' or 'd'
-    assert 0 < int(args[1]) < 14
-    print(args)
-    take_photo()
+for s in suits:
+    for v in values:
+        input('Input: ' + str(v) + ' ' + s)
+        take_photo()
 
-    fname = str(index) + ' ' + args[0] + '.jpg'
-    print(fname)
-    copyfile('tmp.jpg', os.path.join(suits_dir, fname))
+        p = os.path.join(suits_dir, s, str(v) + '_' + str(index) + '.jpg')
+        print('Saving to', p)
+        copyfile('tmp.jpg', p)
 
-    fname = str(index) + ' ' + args[1] + '.jpg'
-    print(fname)
-    copyfile('tmp.jpg', os.path.join(value_dir, fname))
+        p = os.path.join(value_dir, str(v), s + '_' + str(index) + '.jpg')
+        print('Saving to', p)
+        copyfile('tmp.jpg', p)
 
-    index += 1
+        index += 1
+
+        input('And upside down: ')
+        take_photo()
+
+        p = os.path.join(suits_dir, s, str(v) + '_' + str(index) + '.jpg')
+        print('Saving to', p)
+        copyfile('tmp.jpg', p)
+
+        p = os.path.join(value_dir, str(v), s + '_' + str(index) + '.jpg')
+        print('Saving to', p)
+        copyfile('tmp.jpg', p)
+
+        index += 1
+
+        print('')

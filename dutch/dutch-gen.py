@@ -21,7 +21,6 @@ logger.warning('- There is no final round after someone calls Dutch')
 # TODO:
 #  - Beat me
 #  - can give it rewards if its total sum is nice and low
-#  - update dutch.py with a changing indexing system
 #  - track wins on training on a nice graph
 
 lr = 0.001  # learning rate
@@ -144,4 +143,4 @@ for game in range(1, epis+1):
 print()
 logger.info('Done.')
 logger.info('Took %a mins.' % (((time.time()-start)/60).__round__(2)))
-np.save('q-table.npy', players[0].Q)
+#np.save('q-table.npy', players[0].Q)

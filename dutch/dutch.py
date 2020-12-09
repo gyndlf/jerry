@@ -15,7 +15,7 @@ class Dutch:
         self.eyes = eyes
         self.hand = None
         self.table = self.draw_card(msg='Whats the starting card on the table\n[-] : ')  # Whats the card on the table
-        self.actual_hand = None  # TODO: Keep this actually upto date (eg proper indexing and
+        self.actual_hand = None
 
         logger.debug('Using qtable at %a' % os.path.join(self.base, 'q-table.npy'))
 

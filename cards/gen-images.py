@@ -27,8 +27,20 @@ else:
     value_dir = os.path.join(location, 'value', 'test')
     suits_dir = os.path.join(location, 'suits', 'test')
 
+
 def take_photo(fname='tmp.jpg'):
     os.system('fswebcam --no-banner %a &> /dev/null' % fname)
+
+
+def savephoto(index):
+    p = os.path.join(suits_dir, s, str(v) + '_' + str(index) + '.jpg')
+    print('Saving to', p)
+    copyfile('tmp.jpg', p)
+
+    p = os.path.join(value_dir, str(v), s + '_' + str(index) + '.jpg')
+    print('Saving to', p)
+    copyfile('tmp.jpg', p)
+
 
 done = False
 index = 0
@@ -36,28 +48,12 @@ for s in suits:
     for v in values:
         input('Input: ' + str(v) + ' ' + s)
         take_photo()
-
-        p = os.path.join(suits_dir, s, str(v) + '_' + str(index) + '.jpg')
-        print('Saving to', p)
-        copyfile('tmp.jpg', p)
-
-        p = os.path.join(value_dir, str(v), s + '_' + str(index) + '.jpg')
-        print('Saving to', p)
-        copyfile('tmp.jpg', p)
-
+        savephoto(index)
         index += 1
 
         input('And upside down: ')
         take_photo()
-
-        p = os.path.join(suits_dir, s, str(v) + '_' + str(index) + '.jpg')
-        print('Saving to', p)
-        copyfile('tmp.jpg', p)
-
-        p = os.path.join(value_dir, str(v), s + '_' + str(index) + '.jpg')
-        print('Saving to', p)
-        copyfile('tmp.jpg', p)
-
+        savephoto(index)
         index += 1
 
         print('')

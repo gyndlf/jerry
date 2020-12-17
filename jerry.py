@@ -12,18 +12,17 @@ ch = logging.StreamHandler()
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
-from blackjack.blackjack import Blackjack
-from dutch.dutch import Dutch
-from cards.eyes import Eyes
+from cards.Eyes import Eyes
+from Blackjack.Blackjack import Blackjack
+#from dutch.dutch import Dutch
 
 eyes = Eyes()
-blackjack = Blackjack()
-dutch = Dutch(eyes=eyes)
+blackjack = Blackjack(eyes=eyes)
+#dutch = Dutch(eyes=eyes)
 
 while True:
-    # Get the inputed cards
-    logger.info('Begin dutch')
-    #cards = blackjack.gen_hand(eyes)
-    #blackjack.run_round(eyes, cards)
-    dutch.run_round()
-    logger.info('end')
+    logger.info("Begin jerry")
+    logger.info('BlackJack')
+    cards = blackjack.gen_hand()
+    blackjack.run_round(cards)
+    logger.info("End of round")

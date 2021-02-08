@@ -9,8 +9,9 @@ eyes = Eyes()
 print('qtable shape of', Q.shape)
 
 def draw_card(msg=''):
-    input(msg)
-    return int(eyes.read())
+    #input(msg)
+    #return int(eyes.read())
+    return int(input(":"))
 
 def usable_ace(hand):  # Can we play an ace?
      return 1 in hand and sum(hand) + 10 <= 21

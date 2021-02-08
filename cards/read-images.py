@@ -6,7 +6,7 @@ import os
 from keras.preprocessing import image
 import numpy as np
 
-value_model = 'value-v1.h5'
+value_model = 'value-v2.h5'
 tmp_name = 'tmp.jpg'
 
 model = models.load_model(value_model)

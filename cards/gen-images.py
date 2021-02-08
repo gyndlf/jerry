@@ -9,11 +9,12 @@
 #   - add lighting changes so better accuracy
 #   - change file system to match actual layout
 
-values = [1,2,3,4,5,6,7,8,9,10,11,12,13]
-suits = ['club', 'heart', 'spade', 'diamond']
-
 import os
 from shutil import copyfile
+import subprocess
+
+values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+suits = ['club', 'heart', 'spade', 'diamond']
 
 train = True  # save to train or test folders
 
@@ -29,10 +30,12 @@ else:
 
 
 def take_photo(fname='tmp.jpg'):
-    os.system('fswebcam --no-banner %a &> /dev/null' % fname)
+    subprocess.run(['fswebcam', '--no-banner', fname])
+    #os.system('fswebcam --no-banner %a &> /dev/null' % fname)
+    print("Took photo with name", fname)
 
 
-def savephoto(index):
+def savephoto(s, v, index):
     p = os.path.join(suits_dir, s, str(v) + '_' + str(index) + '.jpg')
     print('Saving to', p)
     copyfile('tmp.jpg', p)
@@ -48,12 +51,12 @@ for s in suits:
     for v in values:
         input('Input: ' + str(v) + ' ' + s)
         take_photo()
-        savephoto(index)
+        savephoto(s, v, index)
         index += 1
 
         input('And upside down: ')
         take_photo()
-        savephoto(index)
+        savephoto(s, v, index)
         index += 1
 
         print('')

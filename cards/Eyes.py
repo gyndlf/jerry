@@ -18,8 +18,8 @@ class Eyes:
     def __init__(self):
         self.tmp_name = 'tmp.jpg'
         self.base = os.path.dirname(os.path.abspath(__file__))
-        self.value_name = 'value-v1.h5'
-        self.suit_name = 'suit-v1.h5'
+        self.value_name = 'value-v3.h5'
+        self.suit_name = 'suit-v2.h5'
 
         self.suit_model = models.load_model(os.path.join(self.base, self.suit_name))
         self.value_model = models.load_model(os.path.join(self.base, self.value_name))
@@ -87,3 +87,14 @@ class Eyes:
         value = self.get_value()
         logger.info("Prediction of %s" % value)
         return value
+
+
+if __name__ == '__main__':
+    print('Running eyes loop...')
+    logger = logging.getLogger('eyes')
+    logger.setLevel(logging.DEBUG)
+    e = Eyes()
+    while True:
+        input(': ')
+        s, v = e.read()
+        print('Prediction of %s of %ss' % (v, s))

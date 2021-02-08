@@ -40,8 +40,8 @@ class Blackjack:
     def gen_hand(self):
         hand = []
         hand.append(self.draw_card(msg='Whats my first card? : '))
-        hand.append(self.draw_card(msg='And my second card? [int(1-10)] : '))
-        hand.append(self.draw_card(msg='Whats the dealers card? [int(1-10] : '))
+        hand.append(self.draw_card(msg='And my second card? : '))
+        hand.append(self.draw_card(msg='Whats the dealers card? : '))
         return hand
 
     def run_round(self, cards):

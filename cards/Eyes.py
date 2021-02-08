@@ -13,14 +13,15 @@ import subprocess
 
 logger = logging.getLogger('jerry.cards.eyes')
 
-print('WARNING: Must be run on raspberry pi as uses the webcam')
+logger.warning('Must be run on raspberry pi as uses the webcam')
+
 
 class Eyes:
     def __init__(self):
         self.tmp_name = 'tmp.jpg'
         self.base = os.path.dirname(os.path.abspath(__file__))
 
-        self.value_name = 'models/value-v3.tflite'
+        self.value_name = '/home/pi/jerry/cards/models/value-v3.tflite'
         self.suit_name = None
 
         self.load_models()
@@ -29,17 +30,17 @@ class Eyes:
         self.value_interpreter = tflite.Interpreter(model_path=self.value_name)
         self.value_interpreter.allocate_tensors()
 
-        #self.suit_model = models.load_model(os.path.join(self.base, self.suit_name))
-        #self.value_model = models.load_model(os.path.join(self.base, self.value_name))
+        # self.suit_model = models.load_model(os.path.join(self.base, self.suit_name))
+        # self.value_model = models.load_model(os.path.join(self.base, self.value_name))
         logger.debug('Loaded value model of %a' % self.value_name)
-        #logger.debug('Loaded suit model of %a' % self.suit_name)
+        # logger.debug('Loaded suit model of %a' % self.suit_name)
 
     def take_photo(self):
         cmd = 'fswebcam --no-banner %a' % self.tmp_name
         out = subprocess.check_output(cmd, shell=True, text=True, stderr=subprocess.STDOUT)
-        for line in out.split('\n'):
-            logger.debug(line)
-        #os.system('fswebcam --no-banner %a' % self.tmp_name)
+        # for line in out.split('\n'):
+        #    logger.debug(line)  # If you want to display all the debug garbage
+        # os.system('fswebcam --no-banner %a' % self.tmp_name)
 
     def get_suit(self):
         # Get the suit of the image
@@ -51,10 +52,10 @@ class Eyes:
         x = x.astype('float32') / 255
         x = x.reshape((1,) + x.shape)  # Convert from (150,150,3) to (1,150,150,3)
 
-        #pred = self.suit_model.predict(x, verbose=0)[0]
+        # pred = self.suit_model.predict(x, verbose=0)[0]
 
-        #logger.debug('Suit prediction \n%a' % pred)
-        #label = self.suit_to_label(np.argmax(pred))
+        # logger.debug('Suit prediction \n%a' % pred)
+        # label = self.suit_to_label(np.argmax(pred))
         label = None
         return label
 
@@ -73,9 +74,9 @@ class Eyes:
         out = self.value_interpreter.get_tensor(self.value_interpreter.get_output_details()[0]['index'])
         out = out.reshape(13, )
 
-        logger.debug('Value prediction \n%a' % out)
         label = self.value_to_label(out.argmax(axis=0))
         logger.debug('Label of %a' % label)
+        logger.debug('Confidence of %a/100' % ((out[out.argmax(axis=0)])*100).__round__(1))
         return label
 
     def value_to_label(self, value):

@@ -1,7 +1,7 @@
 # d6623
 # This is the main controlling python file. Everything should be used only in class form
 
-print('Jerry v1.2.2')
+print('Jerry v1.3.0')
 print('"I would never lose to a machine" - Felonius Gru')
 
 import logging
@@ -21,8 +21,7 @@ blackjack = Blackjack(eyes=eyes)
 #dutch = Dutch(eyes=eyes)
 
 while True:
-    logger.info("Begin jerry")
-    logger.info('BlackJack')
+    logger.info("Begin Blackjack jerry")
     cards = blackjack.gen_hand()
     blackjack.run_round(cards)
-    logger.info("End of round")
+    logger.info("End of round.")

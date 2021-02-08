@@ -49,6 +49,7 @@ def extract_value():
 
     label = value_to_label(out.argmax(axis=0))
     print('Guess of', label)
+    print("With a confidence of", out[out.argmax(axis=0)].__round__(2))
 
     #pred = model.predict(x, verbose=0)[0]
     #print('Prediction of ', value_to_label(np.argmax(pred)))

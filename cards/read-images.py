@@ -9,7 +9,7 @@ import tflite_runtime.interpreter as tflite
 print('WARNING: Must be run on raspberry pi as uses the webcam')
 print('WARNING: This is a test and may break suddenly')
 
-value_model = 'models/value-v3.tflite'
+value_model = 'models/value-v4.tflite'
 tmp_name = 'tmp.jpg'
 
 interpreter = tflite.Interpreter(model_path=value_model)

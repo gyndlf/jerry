@@ -21,7 +21,7 @@ class Eyes:
         self.tmp_name = 'tmp.jpg'
         self.base = os.path.dirname(os.path.abspath(__file__))
 
-        self.value_name = '/home/pi/jerry/cards/models/value-v3.tflite'
+        self.value_name = '/home/pi/jerry/cards/models/value-v4.tflite'
         self.suit_name = None
 
         self.load_models()

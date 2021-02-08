@@ -1,7 +1,7 @@
 # d6623
 # This is the main controlling python file. Everything should be used only in class form
 
-print('Jerry v1.3.1')
+print('Jerry v1.3.2')
 print('"I would never lose to a machine" - Felonius Gru')
 
 import logging

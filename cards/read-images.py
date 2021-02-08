@@ -1,15 +1,23 @@
-# d6623
+# d6623 (d6897)
 # Using the generated model, predict the inputed card
 
-from keras import models
 import os
 from keras.preprocessing import image
 import numpy as np
+import tflite_runtime.interpreter as tflite
 
-value_model = 'value-v2.h5'
+print('WARNING: Must be run on raspberry pi as uses the webcam')
+print('WARNING: This is a test and may break suddenly')
+
+value_model = 'models/value-v3.tflite'
 tmp_name = 'tmp.jpg'
 
-model = models.load_model(value_model)
+interpreter = tflite.Interpreter(model_path=value_model)
+interpreter.allocate_tensors()
+
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
+
 print('Loaded old model of %a.' % value_model)
 
 def value_to_label(value):
@@ -22,19 +30,28 @@ def value_to_label(value):
 def take_photo(fname=tmp_name):
     os.system('fswebcam --no-banner %a' % fname)
 
+
 def extract_value():
     # Test on custom image
-    img = image.load_img(tmp_name, target_size=(150, 150),
+    img = image.load_img(tmp_name,
+                         target_size=(150, 150),
                          color_mode='grayscale')
 
     x = image.img_to_array(img)
     x = x.astype('float32') / 255
     x = x.reshape((1,) + x.shape)  # Convert from (150,150,3) to (1,150,150,3)
 
-    pred = model.predict(x, verbose=0)[0]
+    interpreter.set_tensor(input_details[0]['index'], x)
+    interpreter.invoke()
+    out = interpreter.get_tensor(output_details[0]['index'])
 
-    print(pred)
-    print('Prediction of ', value_to_label(np.argmax(pred)))
+    out = out.reshape(13,)
+
+    label = value_to_label(out.argmax(axis=0))
+    print('Guess of', label)
+
+    #pred = model.predict(x, verbose=0)[0]
+    #print('Prediction of ', value_to_label(np.argmax(pred)))
 
 
 while True:

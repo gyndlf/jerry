@@ -18,6 +18,7 @@ class Eyes:
     def __init__(self):
         self.tmp_name = 'tmp.jpg'
         self.base = os.path.dirname(os.path.abspath(__file__))
+
         self.value_name = 'value-v3.h5'
         self.suit_name = 'suit-v2.h5'
 

@@ -15,6 +15,7 @@ class Blackjack:
         self.Q = np.load(os.path.join(self.base, 'q-table.npy'))
 
         self.eyes = eyes
+        self.cards = []
 
         logger.debug('Using qtable at %a' % os.path.join(self.base, 'q-table.npy'))
 
@@ -60,12 +61,14 @@ class Blackjack:
             elif action == 1:
                 # Hit me
                 print('I choose to....\nHIT.')
-                hand.append(self.draw_card(msg='Whats my next card? [int(1-10)] : '))
+                hand.append(self.draw_card(msg='Whats my next card? : '))
                 if self.sum_hand(hand) > 21:
                     # Game over, I went bust
                     print('Oops, I just lost')
                     done = True
+        input('Reveal results?')
         logger.info('Sum of %a' % self.sum_hand(hand))
+        logger.info('Summary of hand: %a' % hand)
 
 
 

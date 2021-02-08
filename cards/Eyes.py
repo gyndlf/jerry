@@ -75,8 +75,11 @@ class Eyes:
         out = out.reshape(13, )
 
         label = self.value_to_label(out.argmax(axis=0))
+        confidence = ((out[out.argmax(axis=0)])*100).__round__(0)
+        if confidence < 50:
+            logger.warning('Confidence is only %a/100. Perhaps a redo?' % confidence)
         logger.debug('Label of %a' % label)
-        logger.debug('Confidence of %a/100' % ((out[out.argmax(axis=0)])*100).__round__(1))
+        logger.debug('Confidence of %a/100' % confidence)
         return label
 
     def value_to_label(self, value):

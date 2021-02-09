@@ -114,4 +114,5 @@ if __name__ == '__main__':
     while True:
         input(': ')
         v = e.read_value()
-        print('Prediction of %s of %ss' % (v, None))
+        #print('Prediction of %s of %ss' % (v, None))
+        print('Prediction of', v)

@@ -22,7 +22,7 @@ class Eyes:
         self.base = os.path.dirname(os.path.abspath(__file__))
 
         self.value_name = '/home/pi/jerry/cards/models/value-v4.tflite'
-        self.suit_name = None
+        self.suit_name = '/home/pi/jerry/cards/models/suit-v3.tflite'
 
         self.load_models()
 
@@ -30,10 +30,11 @@ class Eyes:
         self.value_interpreter = tflite.Interpreter(model_path=self.value_name)
         self.value_interpreter.allocate_tensors()
 
-        # self.suit_model = models.load_model(os.path.join(self.base, self.suit_name))
-        # self.value_model = models.load_model(os.path.join(self.base, self.value_name))
+        self.suit_interpreter = tflite.Interpreter(model_path=self.suit_name)
+        self.suit_interpreter.allocate_tensors()
+
         logger.debug('Loaded value model of %a' % self.value_name)
-        # logger.debug('Loaded suit model of %a' % self.suit_name)
+        logger.debug('Loaded suit model of %a' % self.suit_name)
 
     def take_photo(self):
         cmd = 'fswebcam --no-banner %a' % self.tmp_name
@@ -52,11 +53,18 @@ class Eyes:
         x = x.astype('float32') / 255
         x = x.reshape((1,) + x.shape)  # Convert from (150,150,3) to (1,150,150,3)
 
-        # pred = self.suit_model.predict(x, verbose=0)[0]
+        self.suit_interpreter.set_tensor(self.suit_interpreter.get_input_details()[0]['index'], x)
+        self.suit_interpreter.invoke()
+        out = self.suit_interpreter.get_tensor(self.suit_interpreter.get_output_details()[0]['index'])
+        out = out.reshape(4, )
 
-        # logger.debug('Suit prediction \n%a' % pred)
-        # label = self.suit_to_label(np.argmax(pred))
-        label = None
+        label = self.suit_to_label(out.argmax(axis=0))
+        confidence = ((out[out.argmax(axis=0)])*100).__round__(0)
+
+        if confidence < 50:
+            logger.warning('Confidence is only %a/100. Perhaps a redo?' % confidence)
+        logger.debug('Label of %a' % label)
+        logger.debug('Confidence of %a/100' % confidence)
         return label
 
     def get_value(self):
@@ -113,6 +121,6 @@ if __name__ == '__main__':
     e = Eyes()
     while True:
         input(': ')
-        v = e.read_value()
-        #print('Prediction of %s of %ss' % (v, None))
-        print('Prediction of', v)
+        s, v = e.read()
+        print('Prediction of %s of %ss' % (v, s))
+        #print('Prediction of', v)

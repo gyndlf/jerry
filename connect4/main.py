@@ -4,6 +4,7 @@
 
 from Board import Board
 from Creature import Creature, new_creatures
+from Board import Game
 
 # TODO:
 #  - Create the individual "creatures" to play the game

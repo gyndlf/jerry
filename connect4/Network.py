@@ -65,6 +65,3 @@ if __name__ == '__main__':
 
     pred = tf.argmax(yh)  # Index of column to output
 
-
-
-

@@ -12,7 +12,7 @@ from Creature import Creature, new_creatures
 #  - Add visual element
 
 NUM_CREATURES = 100
-NUM_ROUNDS = 10
+NUM_GENERATIONS = 10
 
 """
 ----- Conventions -----
@@ -37,6 +37,6 @@ Rounds
 """
 
 C = new_creatures(NUM_CREATURES)
-for round in range(NUM_ROUNDS):
-    # Do the round
+for generation in range(NUM_GENERATIONS):
+    # Do the generation
     ...

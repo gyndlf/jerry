@@ -8,6 +8,10 @@ def new_creatures(num=100):
         c.append(Creature())
     return c
 
+def classify(c):
+    """Classify the creature: What is its species?"""
+    ...
+
 
 class Creature:
     """An autonomous player of Connect 4 by its DNA"""

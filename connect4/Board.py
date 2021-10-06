@@ -2,6 +2,7 @@
 
 # The board
 import numpy as np
+from scipy.signal import convolve2d
 from Creature import Creature
 
 
@@ -11,7 +12,7 @@ class Game:
         self.board = Board()
         self.players = [p1, p2]  # Load player/creatures 1 and 2
 
-        self.preview = False  # Show the board each round
+        self.preview = True  # Show the board each round
 
     def run(self):
         """Runs the connect 4 game"""
@@ -22,11 +23,12 @@ class Game:
             self.board.place(turn+1, col)  # Place the piece
 
             if self.preview:  # and rnd % 2 == 0:
-                print("Round", rnd // 2)
+                print("Round", rnd // 2, ":", ['1','2'][turn])
                 print(self.board.state)
 
             turn = (turn + 1) % 2  # Alternate 0,1,0,...
             rnd += 1
+        print("Winner:", self.board.who_won())
 
 
 class Board:
@@ -45,10 +47,23 @@ class Board:
             # Its empty
             loc = 5
         elif top.size == 6:
-            raise Exception('Invalid column, pick again')
+            # Invalid column to place the piece in. Computer will chose a random column
+            perm = np.random.permutation(7)
+            print("Invalid column: Trying a random selection")
+            for p in perm:  # Try them all
+                print(p)
+                col = self.state[:, p]
+                top = np.nonzero(col)[0]
+                if top.size != 6:
+                    # Place it.
+                    if top.size == 0:
+                        loc = 5
+                    else:
+                        loc = top[0]-1
+                    break
         else:
             loc = top[0]-1
-        self.state[loc, column] = id
+        self.state[loc, column] = id  # Actually place it now
 
     def end(self):
         """Has the game ended?"""
@@ -56,7 +71,7 @@ class Board:
 
     def has_won(self):
         """Return true if someone won"""
-
+        return self.who_won() is not None
 
     def stalemate(self):
         """Return true if board is filled completely"""
@@ -64,4 +79,17 @@ class Board:
 
     def who_won(self):
         """Return who won (player id)"""
-        ...
+        # Nicely based off https://stackoverflow.com/questions/29949169/python-connect-4-check-win-function
+
+        horizontal_kernel = np.array([[1, 1, 1, 1]])
+        vertical_kernel = np.transpose(horizontal_kernel)
+        diag1_kernel = np.eye(4, dtype=np.uint8)
+        diag2_kernel = np.fliplr(diag1_kernel)
+        detection_kernels = [horizontal_kernel, vertical_kernel, diag1_kernel, diag2_kernel]
+
+        for kernel in detection_kernels:
+            if (convolve2d(self.state == 1, kernel, mode="valid") == 4).any():
+                return 1
+            elif (convolve2d(self.state == 2, kernel, mode="valid") == 4).any():  # Assuming only 1 win condition is met
+                return 2
+        return None  # No one won :(

@@ -36,7 +36,6 @@ class DNA:
             z = tf.math.add(tf.matmul(self.weights[l], a), self.biases[l])
             a = tf.nn.relu(z)  # TODO: Allow customisation of this function
         yh = tf.nn.softmax(a, axis=0)
-        print(yh)
         return tf.argmax(yh).numpy()
 
 

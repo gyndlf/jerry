@@ -7,6 +7,7 @@ import logging
 
 logger = logging.getLogger('jerry.dutch')
 
+
 class Dutch:
     def __init__(self, eyes):
         logger.info('Loading dutch...')

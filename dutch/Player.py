@@ -21,14 +21,14 @@ class Player():
         self.card = None
         self.Q = np.zeros((14,15,15,15,15,6))  # pickup, c1, c2, c3, c4, a  (14=hidden card)
         self.teach = learn  # If it should update the Q table or not
-        self.lowest = lowest
+        self.lowest = lowest  # Simple greedy algorithm
         self.legacy_reward = 0  # How many reward points (losing points) that action ended up being
         self.old_state = None  # Then compute from old state
         self.old_action = None
         # Special: 0=none, 14=hidden, 1-13=cards
 
     def draw_hand(self):
-        return self.draw_card(2) + [14, 14]
+        return self.draw_card(2) + [14, 14]  # Real hand plus 2 unknown cards
 
     def draw_card(self, num_cards=1):
         cards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]

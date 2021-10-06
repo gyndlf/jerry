@@ -1,6 +1,6 @@
 # %%
 # d6636
-# The code to run the heart learning system.
+# The code to run the dutch learning system.
 
 from Player import Player
 import numpy as np
@@ -58,7 +58,7 @@ for game in range(1, epis+1):
         # Compute points
         logger.debug('Turn %a' % turn)
 
-        # First compute what to do with the visable card
+        # First compute what to do with the visible card
         # If action = 4, don't choose the card, draw from hidden
 
         logger.debug('Computing from visible discarded %a.' % table)

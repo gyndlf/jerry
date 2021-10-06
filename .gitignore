@@ -133,3 +133,9 @@ dmypy.json
 *.iml
 out
 gen
+
+# My things to add
+*.h5
+*.tflite
+*.npy
+*.jpg

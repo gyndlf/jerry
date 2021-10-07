@@ -1,11 +1,12 @@
 # d7137
 
 # The board
+import logging
 import numpy as np
 from scipy.signal import convolve2d
 from Creature import Creature
 
-PREVIEW = False
+log = logging.getLogger(__name__)  # Inherits main config
 
 
 class Game:
@@ -21,9 +22,8 @@ class Game:
         turn = 0  # Which player's turn is it
         rnd = 0
         while not self.board.end():
-            if PREVIEW:  # and rnd % 2 == 0:
-                print("Round", rnd // 2, ":", ['1', '2'][turn])
-                print(self.board.state)
+            log.debug(f"Round {rnd // 2} : {['1', '2'][turn]}")
+            log.debug(self.board.state)
 
             col = self.players[turn].next_move(self.board)  # Get the column to place in
             self.board.place(turn+1, col)  # Place the piece
@@ -31,8 +31,7 @@ class Game:
             turn = (turn + 1) % 2  # Alternate 0,1,0,...
             rnd += 1
         winner = self.board.who_won()
-        if PREVIEW:
-            print("Winner:", winner)
+        log.debug(f"Winner: {winner}")
         return winner
 
 
@@ -59,11 +58,9 @@ class Board:
         elif top.size == 6:
             # Invalid column to place the piece in. Computer will chose a random column
             perm = np.random.permutation(7)
-            if PREVIEW:
-                print(column, "Invalid column: Trying a random selection")
+            log.debug(f"Invalid column {column}: Trying a random selection")
             for column in perm:  # Try them all
-                if PREVIEW:
-                    print(column)
+                log.debug(f"Choose {column}")
                 col = self.state[:, column]
                 top = np.nonzero(col)[0]
                 if top.size != 6:

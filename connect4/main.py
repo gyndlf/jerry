@@ -1,6 +1,10 @@
 # d7137
 
 # Reinforcement learning to play connect 4
+import logging
+import logging.config
+logging.config.fileConfig("logging.conf")
+log = logging.getLogger(__name__)
 
 from Board import Board
 from Creature import Creature, new_creatures
@@ -9,8 +13,6 @@ import random
 
 # TODO:
 #  - Add visual element
-#  - Add printing to log file
-#  - Add proper debug
 
 NUM_CREATURES = 100       # Multiple of 4
 NUM_GENERATIONS = 50
@@ -42,7 +44,7 @@ C = new_creatures(NUM_CREATURES)
 C_new = []  # The next generation
 
 for generation in range(NUM_GENERATIONS):
-    print("Generation", generation)
+    logging.info(f"Generation {generation}")
     # Do the generation
     for g in range(num_groups):  # Creature indexes of g, g+1, g+2 and g+3
         #print("Group", g)

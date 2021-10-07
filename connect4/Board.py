@@ -5,6 +5,7 @@ import numpy as np
 from scipy.signal import convolve2d
 from Creature import Creature
 
+PREVIEW = False
 
 class Game:
     """The Connect 4 Game: Runs the game over the board"""
@@ -17,24 +18,32 @@ class Game:
     def run(self):
         """Runs the connect 4 game"""
         turn = 0  # Which player's turn is it
-        rnd = 1
+        rnd = 0
         while not self.board.end():
+            if PREVIEW:  # and rnd % 2 == 0:
+                print("Round", rnd // 2, ":", ['1', '2'][turn])
+                print(self.board.state)
+
             col = self.players[turn].next_move(self.board)  # Get the column to place in
             self.board.place(turn+1, col)  # Place the piece
 
-            if self.preview:  # and rnd % 2 == 0:
-                print("Round", rnd // 2, ":", ['1','2'][turn])
-                print(self.board.state)
-
             turn = (turn + 1) % 2  # Alternate 0,1,0,...
             rnd += 1
-        print("Winner:", self.board.who_won())
+        winner = self.board.who_won()
+        if PREVIEW:
+            print("Winner:", winner)
+        return winner
 
 
 class Board:
     """ The Connect 4 Board (per game).
         Intentionally low level, just some smart functions on the numpy array"""
     def __init__(self):
+        self.state = None  # Stub
+        self.clear()
+
+    def clear(self):
+        """Clear the board"""
         self.state = np.zeros((6, 7), dtype='int')
 
     def place(self, id, column):
@@ -49,10 +58,12 @@ class Board:
         elif top.size == 6:
             # Invalid column to place the piece in. Computer will chose a random column
             perm = np.random.permutation(7)
-            print("Invalid column: Trying a random selection")
-            for p in perm:  # Try them all
-                print(p)
-                col = self.state[:, p]
+            if PREVIEW:
+                print(column, "Invalid column: Trying a random selection")
+            for column in perm:  # Try them all
+                if PREVIEW:
+                    print(column)
+                col = self.state[:, column]
                 top = np.nonzero(col)[0]
                 if top.size != 6:
                     # Place it.

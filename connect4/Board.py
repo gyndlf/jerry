@@ -7,6 +7,7 @@ from Creature import Creature
 
 PREVIEW = False
 
+
 class Game:
     """The Connect 4 Game: Runs the game over the board"""
     def __init__(self, p1, p2):

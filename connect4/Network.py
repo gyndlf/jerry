@@ -44,21 +44,27 @@ class DNA:
         yh = tf.nn.softmax(a, axis=0)
         return tf.argmax(yh).numpy()
 
-    def merge(self, other):
+    def merge(self, other, weigh=True):
         """Merge two sets of DNA together. Weighted towards self (Against other)"""
         # Methods
         # 1. Take a mask of each weights and add them together
         weights = []
         biases = []
+
+        if weigh:  # Should the network be weighed towards self. Default yes. (66/33)
+            peak = 3
+        else:
+            peak = 2
+
         for i, l in enumerate(self.weights):  # Cycle through weights
-            mask = np.random.randint(0, 3, l.shape)
+            mask = np.random.randint(0, peak, l.shape)
             mask[mask == 2] = 1
             a = mask*l
             b = (np.ones(l.shape)-mask).astype('int64')*other.weights[i]  # Invert the mask
             weights.append(a + b)
 
         for i, l in enumerate(self.biases):  # Cycle through biases
-            mask = np.random.randint(0, 3, l.shape)
+            mask = np.random.randint(0, peak, l.shape)
             mask[mask == 2] = 1
             a = mask*l
             b = (np.ones(l.shape)-mask).astype('int64')*other.biases[i]  # Invert the mask

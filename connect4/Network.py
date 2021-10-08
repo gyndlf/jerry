@@ -28,14 +28,19 @@ def new_wb(dims):
 
 class DNA:
     """The DNA of a creature"""
-    def __init__(self, load=False, w=None, b=None):
+    def __init__(self, w=None, b=None):
         self.dims = [42, 10, 12, 7]  # Dimensions of layers. Layer 0 is input, layer -1 is output.
 
-        if load:  # Load the weights if necessary
+        if w is not None:  # Load the weights if necessary
+            assert b is not None
             self.weights = w
             self.biases = b
         else:
             self.weights, self.biases = new_wb(self.dims)
+
+    def copy(self):
+        """Return a copy of the DNA (unlinked)"""
+        return DNA(w=self.weights.copy(), b=self.biases.copy())
 
     def forward(self, state):
         """Feed forward the state to output"""
@@ -72,7 +77,7 @@ class DNA:
             b = (np.ones(l.shape)-mask).astype('int64')*other.biases[i]  # Invert the mask
             biases.append(a + b)
 
-        return DNA(load=True, w=weights, b=biases)  # Return the new DNA
+        return DNA(w=weights, b=biases)  # Return the new DNA
 
     def noise(self, density, std):
         """Add some noise to the weights"""

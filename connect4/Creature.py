@@ -6,19 +6,26 @@ from Network import DNA
 MUTATION_RATE = 0.02  # % of weights the get a small mutation (How common)
 MUTATION_SIZE = 1  # How big the mutations are. (Standard deviation)
 
+
 log = logging.getLogger(__name__)  # Inherits main config
+
 
 def new_creatures(num=100):
     """Make 100 new creatures"""
-    c = []
+    cs = []
     for i in range(num):
-        c.append(Creature())
-    return c
+        cs.append(Creature())
+    return cs
 
 
 def classify(c):
     """Classify the creature: What is its species?"""
-    ...
+    # Done by comparing the hidden layers in DNA
+    hidden = c.dna.dims[1:-2]  # Make the last one a number for coolness sake
+    name = ""
+    for s in hidden:
+        name += chr((s % 26)+65)
+    return name + str(c.dna.dims[-2])
 
 
 class Creature:
@@ -31,8 +38,15 @@ class Creature:
 
     def breed(self, other, weigh=True):
         """Return a new creature with mixed DNA"""
-        d = self.dna.merge(other.dna, weigh=weigh)  # Get the mixed DNA (Is weighted towards self)
-        return Creature(d)
+        if classify(self) == classify(other):
+            d = self.dna.merge(other.dna, weigh=weigh)  # Get the mixed DNA (Is weighted towards self)
+            return Creature(d)
+        else:
+            return self.copy()
+
+    def copy(self):
+        """Return a new copy of the creature: Unlinked"""
+        return Creature(self.dna.copy())
 
     def next_move(self, board, me):
         """Make its next move based on the board"""
@@ -57,3 +71,8 @@ class Creature:
         # TODO: Make mutation rate dynamic (Slow down as generations increase)
         # TODO: Add mutations to network shape (maybe also activation functions)
         self.dna.noise(MUTATION_RATE, MUTATION_SIZE)
+
+
+if __name__ == '__main__':
+    c = Creature()
+    print(classify(c))

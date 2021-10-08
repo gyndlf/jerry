@@ -22,10 +22,9 @@ class Game:
         turn = 0  # Which player's turn is it
         rnd = 0
         while not self.board.end():
-            log.debug(f"Round {rnd // 2} : {['1', '2'][turn]}")
-            log.debug(self.board.state)
+            log.debug(f"Round {rnd // 2} : {['1', '2'][turn]}\n{self.board.state}")
 
-            col = self.players[turn].next_move(self.board)  # Get the column to place in
+            col = self.players[turn].next_move(self.board, turn+1)  # Get the column to place in
             self.board.place(turn+1, col)  # Place the piece
 
             turn = (turn + 1) % 2  # Alternate 0,1,0,...

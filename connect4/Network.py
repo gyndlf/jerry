@@ -1,11 +1,13 @@
 # d7137
 
 # The real brains of the creatures; use per generation per round per game per move
-
+import logging
 import tensorflow as tf
 import numpy as np
+from scipy.sparse import random
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # ignore warnings.
+log = logging.getLogger(__name__)  # Inherits main config
 
 """
 STRUCTURE
@@ -72,8 +74,25 @@ class DNA:
 
         return DNA(load=True, w=weights, b=biases)  # Return the new DNA
 
+    def noise(self, density, std):
+        """Add some noise to the weights"""
+        for i, l in enumerate(self.biases):
+            locs = random(l.shape[0], l.shape[1], density).A
+            locs[locs != 0] = 1
+            muts = np.random.normal(0, std, l.shape)
+            muts = np.multiply(muts, locs)
+            l += muts
+
+        for i, l in enumerate(self.weights):
+            locs = random(l.shape[0], l.shape[1], density).A
+            locs[locs != 0] = 1
+            muts = np.random.normal(0, std, l.shape)
+            muts = np.multiply(muts, locs)
+            l += muts
+
 
 if __name__ == '__main__':
     d = DNA()
     print(d.forward(np.ones((6,7))))
+    d.noise(0.5, 1)
 

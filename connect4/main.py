@@ -44,10 +44,10 @@ C = new_creatures(NUM_CREATURES)
 C_new = []  # The next generation
 
 for generation in range(NUM_GENERATIONS):
-    logging.info(f"Generation {generation}")
+    log.info(f"Generation {generation}")
     # Do the generation
     for g in range(num_groups):  # Creature indexes of g, g+1, g+2 and g+3
-        #print("Group", g)
+        log.debug(f"Group {g}")
         # Run first games
         w1 = Game(C[g], C[g+1]).run()
         w2 = Game(C[g+2], C[g+3]).run()

@@ -1,10 +1,14 @@
 # d7137
 # Funtions to do with creatures
 import logging
+import numpy as np
 from Network import DNA
 
 MUTATION_RATE = 0.02  # % of weights the get a small mutation (How common)
 MUTATION_SIZE = 1  # How big the mutations are. (Standard deviation)
+
+LAYER_PROBA = 0.001  # Chance for a new layer to be added
+NODE_PROBA = 0.01  # Chance for a node to be added (or removed)
 
 
 log = logging.getLogger(__name__)  # Inherits main config
@@ -36,9 +40,14 @@ class Creature:
         else:
             self.dna = DNA()  # Get some random DNA
 
+    @property
+    def species(self):
+        """Attribute of class of self"""
+        return classify(self)
+
     def breed(self, other, weigh=True):
         """Return a new creature with mixed DNA"""
-        if classify(self) == classify(other):
+        if self.species == other.species:
             d = self.dna.merge(other.dna, weigh=weigh)  # Get the mixed DNA (Is weighted towards self)
             return Creature(d)
         else:
@@ -71,6 +80,13 @@ class Creature:
         # TODO: Make mutation rate dynamic (Slow down as generations increase)
         # TODO: Add mutations to network shape (maybe also activation functions)
         self.dna.noise(MUTATION_RATE, MUTATION_SIZE)
+
+        if np.random.rand() < NODE_PROBA:
+            # Add or remove a new node from the network
+
+            old = self.species
+            self.dna.change_node()
+            log.info(f"New species! ({old}->{self.species})")
 
 
 if __name__ == '__main__':

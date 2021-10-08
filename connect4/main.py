@@ -15,7 +15,7 @@ import random
 #  - Add visual element
 
 NUM_CREATURES = 100       # Multiple of 4
-NUM_GENERATIONS = 50
+NUM_GENERATIONS = 100
 
 """
 ----- Conventions -----
@@ -83,6 +83,10 @@ for generation in range(NUM_GENERATIONS):
         else:
             # I have no idea. Should never get here
             raise Exception("Umm... How did you get here")
+
+    # Mutate all the creatures
+    for c in C_new:
+        c.mutate()
 
     # Move the generation on
     random.shuffle(C_new)

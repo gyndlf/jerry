@@ -59,7 +59,7 @@ class Board:
             perm = np.random.permutation(7)
             log.debug(f"Invalid column {column}: Trying a random selection")
             for column in perm:  # Try them all
-                log.debug(f"Choose {column}")
+                # log.debug(f"Choose {column}")
                 col = self.state[:, column]
                 top = np.nonzero(col)[0]
                 if top.size != 6:

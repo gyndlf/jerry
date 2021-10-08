@@ -15,6 +15,8 @@ STRUCTURE
 - But MUST have a normal input of 6x7 and output of softmax 7x1.
 """
 
+BASE_DIMS = [42, 10, 12, 7]
+
 
 def new_wb(dims):
     """Make some new weights and biases"""
@@ -28,8 +30,10 @@ def new_wb(dims):
 
 class DNA:
     """The DNA of a creature"""
-    def __init__(self, w=None, b=None):
-        self.dims = [42, 10, 12, 7]  # Dimensions of layers. Layer 0 is input, layer -1 is output.
+    def __init__(self, d=None, w=None, b=None):
+        if d is None:
+            d = BASE_DIMS
+        self.dims = d  # Dimensions of layers. Layer 0 is input, layer -1 is output.
 
         if w is not None:  # Load the weights if necessary
             assert b is not None
@@ -40,7 +44,7 @@ class DNA:
 
     def copy(self):
         """Return a copy of the DNA (unlinked)"""
-        return DNA(w=self.weights.copy(), b=self.biases.copy())
+        return DNA(d=self.dims.copy(), w=self.weights.copy(), b=self.biases.copy())
 
     def forward(self, state):
         """Feed forward the state to output"""
@@ -53,8 +57,7 @@ class DNA:
 
     def merge(self, other, weigh=True):
         """Merge two sets of DNA together. Weighted towards self (Against other)"""
-        # Methods
-        # 1. Take a mask of each weights and add them together
+        # Take a mask of each weights and add them together
         weights = []
         biases = []
 
@@ -62,7 +65,6 @@ class DNA:
             peak = 3
         else:
             peak = 2
-
         for i, l in enumerate(self.weights):  # Cycle through weights
             mask = np.random.randint(0, peak, l.shape)
             mask[mask == 2] = 1
@@ -77,7 +79,7 @@ class DNA:
             b = (np.ones(l.shape)-mask).astype('int64')*other.biases[i]  # Invert the mask
             biases.append(a + b)
 
-        return DNA(w=weights, b=biases)  # Return the new DNA
+        return DNA(d=self.dims.copy(), w=weights.copy(), b=biases.copy())  # Return the new DNA
 
     def noise(self, density, std):
         """Add some noise to the weights"""
@@ -94,6 +96,23 @@ class DNA:
             muts = np.random.normal(0, std, l.shape)
             muts = np.multiply(muts, locs)
             l += muts
+
+    def change_node(self):
+        """Add a new node somewhere to the network"""
+        layer = np.random.randint(1, len(self.dims)-1)  # Only hidden layers can change
+        self.dims[layer] += int((np.random.randint(0, 2)-.5)*2)
+        # Restructure the weights and biases.
+        w_ = []
+        b_ = []
+        for layer in range(1, len(self.dims)):
+            w = self.weights[layer-1][tf.newaxis, ..., tf.newaxis]  # Make a 4D tensor
+            b = self.biases[layer-1][tf.newaxis, ..., tf.newaxis]
+
+            w_.append(tf.image.resize(w, (self.dims[layer], self.dims[layer-1]))[0, ..., 0])  # Resize and drop to 2D
+            b_.append(tf.image.resize(b, (self.dims[layer], 1))[0, ..., 0])
+
+        self.weights = w_
+        self.biases = b_
 
 
 if __name__ == '__main__':

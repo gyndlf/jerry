@@ -48,10 +48,11 @@ class Creature:
     def breed(self, other, weigh=True):
         """Return a new creature with mixed DNA"""
         if self.species == other.species:
+            # logging.warning(f"{self.species}+{other.species}")
             d = self.dna.merge(other.dna, weigh=weigh)  # Get the mixed DNA (Is weighted towards self)
             return Creature(d)
         else:
-            return self.copy()
+            return self.copy()  # TODO: Return new mutated creature if unable to breed
 
     def copy(self):
         """Return a new copy of the creature: Unlinked"""
@@ -83,7 +84,6 @@ class Creature:
 
         if np.random.rand() < NODE_PROBA:
             # Add or remove a new node from the network
-
             old = self.species
             self.dna.change_node()
             log.info(f"New species! ({old}->{self.species})")

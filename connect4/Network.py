@@ -42,6 +42,18 @@ class DNA:
         else:
             self.weights, self.biases = new_wb(self.dims)
 
+    @property
+    def valid(self):
+        """Return if the network architecture is valid or not"""
+        v = 0
+        for i, l in enumerate(self.dims[1:]):
+            v += self.weights[i].shape[0] != l
+            v += self.biases[i].shape[0] != l
+        if v == 0:
+            return True
+        else:
+            return False
+
     def copy(self):
         """Return a copy of the DNA (unlinked)"""
         return DNA(d=self.dims.copy(), w=self.weights.copy(), b=self.biases.copy())

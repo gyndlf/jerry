@@ -10,6 +10,7 @@ from Board import Board
 from Creature import Creature, new_creatures
 from Board import Game
 import random
+from collections import defaultdict
 
 # TODO:
 #  - Add visual element
@@ -84,10 +85,13 @@ for generation in range(NUM_GENERATIONS):
             # I have no idea. Should never get here
             raise Exception("Umm... How did you get here")
 
+    species = defaultdict(int)  # Dict of generation species makeup
     # Mutate all the creatures
-    for c in C_new:
+    for c in C_new:  # TODO: Smarter mutation. If winner: no mutation, if born: no mutation, only for 2nd. (Reduce rates)
         c.mutate()
+        species[c.species] += 1
 
+    log.info({k: v / 100 for k, v in species.items()})
     # Move the generation on
     random.shuffle(C_new)
     C = C_new

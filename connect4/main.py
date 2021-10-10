@@ -38,62 +38,72 @@ Rounds
  - Repeat for another round.
 """
 
+
+def run_group(creatures, id):
+    """Run the tournament of each group (return new breed of 1-> 4)"""
+    # Run first games
+    w1 = Game(creatures[id], creatures[id + 1]).run()
+    w2 = Game(creatures[id + 2], creatures[id + 3]).run()
+
+    if w1 is not None and w2 is not None:
+        # Run playoffs for 1st and 3rd
+        first = Game(creatures[id + w1 - 1], creatures[id + w2 + 1]).run()  # -1 to offset winner being 1,2 but array 0,1
+        if first is not None:
+            ids = [id + w1 - 1, id + w2 + 1]
+
+            winner = creatures[ids[first - 1]]
+            second = creatures[ids[::-1][first - 1]]  # Reverse the order to get the other
+
+            new1 = winner.breed(second)
+            new2 = winner.breed(second)
+            return [winner, second, new1, new2]
+        else:
+            # Tie in finale
+            new1 = creatures[id + w1 - 1].breed(creatures[id + w2 + 1], weigh=False)
+            new2 = creatures[id + w2 + 1].breed(creatures[id + w1 - 1], weigh=False)
+            return [creatures[id + w1 - 1], creatures[id + w2 + 1], new1, new2]
+    elif w1 is None and w2 is None:
+        # Two ties. Just pass them on
+        return [creatures[id], creatures[id + 1], creatures[id + 2], creatures[id + 3]]
+    elif w1 is None:
+        # First game was tie
+        new = creatures[id + w2 + 1].breed(creatures[id])  # Choose the first (Both should have similar genetics)
+        return [creatures[id], creatures[id + 1], creatures[id + w2 + 1], new]
+    elif w2 is None:
+        # Second game was tie; Opposite to above
+        new = creatures[id + w1 - 1].breed(creatures[id + 2])  # Choose the first (Both should have similar genetics)
+        return [creatures[id + 2], creatures[id + 3], creatures[id + w1 - 1], new]
+    else:
+        # I have no idea. Should never get here
+        raise Exception("Umm... How did you get here")
+
+
 assert NUM_CREATURES % 4 == 0
 num_groups = NUM_CREATURES // 4
 C = new_creatures(NUM_CREATURES)
 
-C_new = []  # The next generation
-
 for generation in range(NUM_GENERATIONS):
+    winners = []  # Leave as are
+    born = []  # Likewise leave as are
+    mutate = []  # Mutate
     log.info(f"Generation {generation}")
     # Do the generation
-    for g in range(num_groups):  # Creature indexes of g, g+1, g+2 and g+3
-        log.debug(f"Group {g}")
-        # Run first games
-        w1 = Game(C[g], C[g+1]).run()
-        w2 = Game(C[g+2], C[g+3]).run()
+    for grp in range(num_groups):  # Creature indexes of g, g+1, g+2 and g+3
+        log.debug(f"Group {grp}")
+        winner, second, born1, born2 = run_group(C, grp)
+        winners.append(winner)
+        mutate.append(second)
+        born.extend([born1, born2])
 
-        if w1 is not None and w2 is not None:
-            # Run playoffs for 1st and 3rd
-            first = Game(C[g+w1-1], C[g+w2+1]).run()  # -1 to offset winner being 1,2 but array 0,1
-            if first is not None:
-                ids = [g+w1-1, g+w2+1]
-
-                winner = C[ids[first-1]]
-                second = C[ids[::-1][first-1]]  # Reverse the order to get the other
-
-                new1 = winner.breed(second)
-                new2 = winner.breed(second)
-                C_new.extend([winner, second, new1, new2])
-            else:
-                # Tie in finale
-                new1 = C[g+w1-1].breed(C[g+w2+1], weigh=False)
-                new2 = C[g+w2+1].breed(C[g+w1-1], weigh=False)
-                C_new.extend([C[g+w1-1], C[g+w2+1], new1, new2])
-        elif w1 is None and w2 is None:
-            # Two ties. Just pass them on
-            C_new.extend([C[g], C[g+1], C[g+2], C[g+3]])
-        elif w1 is None:
-            # First game was tie
-            new = C[g+w2+1].breed(C[g])  # Choose the first (Both should have similar genetics)
-            C_new.extend([C[g], C[g+1], C[g+w2+1], new])
-        elif w2 is None:
-            # Second game was tie; Opposite to above
-            new = C[g+w1-1].breed(C[g+2])  # Choose the first (Both should have similar genetics)
-            C_new.extend([C[g+2], C[g+3], C[g+w1-1], new])
-        else:
-            # I have no idea. Should never get here
-            raise Exception("Umm... How did you get here")
+    for c in mutate:
+        c.mutate()  # Mutate all the creatures
 
     species = defaultdict(int)  # Dict of generation species makeup
-    # Mutate all the creatures
-    for c in C_new:  # TODO: Smarter mutation. If winner: no mutation, if born: no mutation, only for 2nd. (Reduce rates)
-        c.mutate()
-        species[c.species] += 1
+    for creat in winners + born + mutate:
+        species[creat.species] += 1
 
     log.info({k: v / 100 for k, v in species.items()})
     # Move the generation on
-    random.shuffle(C_new)
-    C = C_new
-    C_new = []
+    C = winners + born + mutate
+    random.shuffle(C)
 

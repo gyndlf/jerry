@@ -86,7 +86,7 @@ class Creature:
             # Add or remove a new node from the network
             old = self.species
             self.dna.change_node()
-            log.info(f"New species! ({old}->{self.species})")
+            log.debug(f"New species! ({old}->{self.species})")
 
 
 if __name__ == '__main__':

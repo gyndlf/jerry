@@ -62,7 +62,10 @@ class DNA:
         """Feed forward the state to output"""
         a = state.reshape((42,1))
         for l in range(len(self.weights)):  # l is hidden weight layer (or final layer)
-            z = tf.math.add(tf.matmul(self.weights[l], a), self.biases[l])
+            try:
+                z = tf.math.add(tf.matmul(self.weights[l], a), self.biases[l])
+            except Exception as e:
+                log.error("Unaligned network", exc_info=True)
             a = tf.nn.relu(z)  # TODO: Allow customisation of this function
         yh = tf.nn.softmax(a, axis=0)
         return tf.argmax(yh).numpy()

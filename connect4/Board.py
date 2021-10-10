@@ -5,17 +5,18 @@ import logging
 import numpy as np
 from scipy.signal import convolve2d
 from Creature import Creature
+import visualise
 
 log = logging.getLogger(__name__)  # Inherits main config
 
 
 class Game:
     """The Connect 4 Game: Runs the game over the board"""
-    def __init__(self, p1, p2):
+    def __init__(self, p1, p2, fancy_display=False):
         self.board = Board()
         self.players = [p1, p2]  # Load player/creatures 1 and 2
 
-        self.preview = True  # Show the board each round
+        self.preview = fancy_display  # Show the board each round
 
     def run(self):
         """Runs the connect 4 game"""
@@ -23,6 +24,9 @@ class Game:
         rnd = 0
         while not self.board.end():
             log.debug(f"Round {rnd // 2} : {['1', '2'][turn]}\n{self.board.state}")
+
+            if self.preview:
+                visualise.plot_board(self.board)
 
             col = self.players[turn].next_move(self.board, turn+1)  # Get the column to place in
             self.board.place(turn+1, col)  # Place the piece

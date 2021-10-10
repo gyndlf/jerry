@@ -9,6 +9,7 @@ import json
 import logging
 log = logging.getLogger(__name__)  # Inherits main config
 
+
 def plot_composition(time_dict, stack=False):
     """Plot the species composition over time"""
     df = pd.DataFrame(time_dict)
@@ -36,7 +37,7 @@ def plot_board(board, text=True):
 
 def plot_net(dna):
     """Plot the DNA network associated"""
-    # Must convert into a dataframe.
+    # Parallel coordinates? Hardwire?
     ...
 
 

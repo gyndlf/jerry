@@ -12,12 +12,15 @@ from Board import Game
 import random
 from collections import defaultdict
 import json
+import Database
 
 # TODO:
 #  - Add visual element
 
 NUM_CREATURES = 100       # Multiple of 4
-NUM_GENERATIONS = 100
+NUM_GENERATIONS = 101  # Do over 10 as to save final.
+SAVE_EVERY_GEN = 10  # Save every 10 generations
+
 DATA_FILE = "data.json"
 
 """
@@ -112,6 +115,10 @@ for generation in range(NUM_GENERATIONS):
     # Move the generation on
     C = winners + born + mutate
     random.shuffle(C)
+
+    if generation % SAVE_EVERY_GEN == 0:
+        # Save the stuff.
+        Database.save_creatures(C, generation)
 
 # Save the data
 with open(DATA_FILE, "w") as f:

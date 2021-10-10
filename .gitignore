@@ -141,3 +141,4 @@ gen
 *.jpg
 *.log.*
 *.json
+*.db

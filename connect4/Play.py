@@ -8,6 +8,7 @@ log = logging.getLogger(__name__)  # Inherits main config
 import numpy as np
 from Board import Game
 from Creature import Creature
+import Database
 
 
 class Human(Creature):
@@ -21,7 +22,7 @@ class Human(Creature):
             move = input("Column to place in: ")
 
             try:
-                move = int(move)-1
+                move = int(move)
             except Exception as e:
                 log.error("Invalid input")
                 continue
@@ -35,15 +36,21 @@ class Human(Creature):
 
 if __name__ == '__main__':
     print("Beginning game.")
-    print("You are Player 1")
+
+    uid = input("Enter uid for creature in db")
+    assert type(uid) == str
+    creature = Database.retrieve_creature(uid)
+
     if np.random.rand() < 0.5:
         print("You begin!")
+        print("You are Player 1")
         start = True
-        game = Game(Human(), Creature(), fancy_display=True)
+        game = Game(Human(), creature, fancy_display=True)
     else:
         print("The computer begins")
+        print("You are Player 2")
         start = False
-        game = Game(Creature(), Human(), fancy_display=True)
+        game = Game(creature, Human(), fancy_display=True)
 
     winner = game.run()
     print(f"Player {winner} wins!")

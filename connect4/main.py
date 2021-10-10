@@ -11,12 +11,14 @@ from Creature import Creature, new_creatures
 from Board import Game
 import random
 from collections import defaultdict
+import json
 
 # TODO:
 #  - Add visual element
 
 NUM_CREATURES = 100       # Multiple of 4
 NUM_GENERATIONS = 100
+DATA_FILE = "data.json"
 
 """
 ----- Conventions -----
@@ -82,6 +84,8 @@ assert NUM_CREATURES % 4 == 0
 num_groups = NUM_CREATURES // 4
 C = new_creatures(NUM_CREATURES)
 
+data = {"prop": []}  # Time series cool stuff
+
 for generation in range(NUM_GENERATIONS):
     winners = []  # Leave as are
     born = []  # Likewise leave as are
@@ -102,8 +106,13 @@ for generation in range(NUM_GENERATIONS):
     for creat in winners + born + mutate:
         species[creat.species] += 1
 
-    log.info({k: v / 100 for k, v in species.items()})
+    p = {k: v / 100 for k, v in species.items()}
+    data["prop"].append(p)
+    log.info(p)
     # Move the generation on
     C = winners + born + mutate
     random.shuffle(C)
 
+# Save the data
+with open(DATA_FILE, "w") as f:
+    json.dump(data, f, indent=4)

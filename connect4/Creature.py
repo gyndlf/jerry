@@ -8,7 +8,7 @@ MUTATION_RATE = 0.02  # % of weights the get a small mutation (How common)
 MUTATION_SIZE = 1  # How big the mutations are. (Standard deviation)
 
 LAYER_PROBA = 0.001  # Chance for a new layer to be added
-NODE_PROBA = 0.01  # Chance for a node to be added (or removed)
+NODE_PROBA = 0.02  # Chance for a node to be added (or removed)
 
 
 log = logging.getLogger(__name__)  # Inherits main config

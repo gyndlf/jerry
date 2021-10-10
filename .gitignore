@@ -140,3 +140,4 @@ gen
 *.npy
 *.jpg
 *.log.*
+*.json

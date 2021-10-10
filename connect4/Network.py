@@ -15,7 +15,7 @@ STRUCTURE
 - But MUST have a normal input of 6x7 and output of softmax 7x1.
 """
 
-BASE_DIMS = [42, 10, 12, 7]
+INIT_SPECIES = ["K12", "I12", "J12"]
 
 
 def new_wb(dims):
@@ -28,11 +28,26 @@ def new_wb(dims):
     return w, b
 
 
+def reverse_classify(name):
+    """Return the dimensions associated with the classification"""
+    dim = [42]
+    for i, letter in enumerate(name):
+        num = ord(letter)-65
+        if 0 <= num <= 25:
+            # Is a valid letter
+            dim.append(num)
+        else:
+            # Is a valid number and thus the end of the name
+            dim.append(int(name[-(len(name)-i):]))  # WARNING: ASSUMING THAT THE FINAL LAYER IS 1-99
+            break
+    return dim + [7]  # Must add on the input/output layers
+
+
 class DNA:
     """The DNA of a creature"""
     def __init__(self, d=None, w=None, b=None):
         if d is None:
-            d = BASE_DIMS
+            d = reverse_classify(np.random.choice(INIT_SPECIES))
         self.dims = d  # Dimensions of layers. Layer 0 is input, layer -1 is output.
 
         if w is not None:  # Load the weights if necessary
@@ -134,4 +149,5 @@ if __name__ == '__main__':
     d = DNA()
     print(d.forward(np.ones((6,7))))
     d.noise(0.5, 1)
+    print(reverse_classify("HJ311"))
 

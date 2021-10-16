@@ -25,6 +25,7 @@ def clear_db():
     """Clear the database (Reset)"""
     conn = sqlite3.connect(FILENAME)
     cur = conn.cursor()
+    log.warning(f"Clearing database creatures in {FILENAME}")
     cur.execute("DELETE FROM creatures")
     conn.commit()
     conn.close()

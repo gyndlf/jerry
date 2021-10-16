@@ -16,9 +16,10 @@ import Database
 
 # TODO:
 #  - Add visual element
+#  - Change network to convolution to detect patterns
 
-NUM_CREATURES = 100       # Multiple of 4
-NUM_GENERATIONS = 101  # Do over 10 as to save final.
+NUM_CREATURES = 200       # Multiple of 4
+NUM_GENERATIONS = 1001  # Do over 10 as to save final.
 SAVE_EVERY_GEN = 10  # Save every 10 generations
 
 DATA_FILE = "data.json"
@@ -109,7 +110,7 @@ for generation in range(NUM_GENERATIONS):
     for creat in winners + born + mutate:
         species[creat.species] += 1
 
-    p = {k: v / 100 for k, v in species.items()}
+    p = {k: v / NUM_CREATURES for k, v in species.items()}
     data["prop"].append(p)
     log.info(p)
     # Move the generation on

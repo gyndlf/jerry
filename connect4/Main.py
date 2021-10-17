@@ -32,7 +32,7 @@ if __name__ == '__main__':
         creatures = Creature.new_creatures(args.size)
     else:
         # Load the last generation
-        creatures = Database.retrieve_last_gen()
+        lastgen, creatures = Database.retrieve_last_gen()
 
     log.info(f"Running {args.gens} generations")
     Generation.run_generations(creatures, args.gens)

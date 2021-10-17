@@ -76,7 +76,7 @@ def retrieve_last_gen():
     conn.commit()
     conn.close()
     log.info(f"Loaded last generation {gen} of {len(creatures)} creatures")
-    return [pickle.loads(c[0]) for c in creatures]
+    return gen, [pickle.loads(c[0]) for c in creatures]
 
 
 def main():

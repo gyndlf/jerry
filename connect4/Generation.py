@@ -80,7 +80,7 @@ def run_group(creatures, id):
         raise Exception("Umm... How did you get here")
 
 
-def run_generations(C, gens):
+def run_generations(C, gens, genstart=0):
     """Run 'gens' generations for creatures C"""
     num = len(C)
     assert num % 4 == 0
@@ -88,7 +88,7 @@ def run_generations(C, gens):
 
     data = {"prop": []}  # Time series cool stuff
 
-    for generation in range(gens):
+    for generation in range(genstart+1, gens+1):
         winners = []  # Leave as are
         born = []  # Likewise leave as are
         mutate = []  # Mutate

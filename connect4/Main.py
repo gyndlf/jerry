@@ -30,9 +30,10 @@ if __name__ == '__main__':
     if args.new:
         # Start a new generation
         creatures = Creature.new_creatures(args.size)
+        Generation.run_generations(creatures, args.gens)
     else:
         # Load the last generation
         lastgen, creatures = Database.retrieve_last_gen()
+        Generation.run_generations(creatures, args.gens, genstart=lastgen)
 
     log.info(f"Running {args.gens} generations")
-    Generation.run_generations(creatures, args.gens)

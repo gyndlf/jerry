@@ -67,6 +67,18 @@ def retrieve_last():
     return creature[0]
 
 
+def retrieve_last_gen():
+    """Retrieve the last generation saved with generation number"""
+    conn = sqlite3.connect(FILENAME)
+    cur = conn.cursor()
+    gen = cur.execute("SELECT MAX(generation) FROM creatures;").fetchone()[0]
+    creatures = cur.execute("SELECT pickle FROM creatures WHERE generation = ?", (gen,)).fetchall()
+    conn.commit()
+    conn.close()
+    log.info(f"Loaded last generation {gen} of {len(creatures)} creatures")
+    return [pickle.loads(c[0]) for c in creatures]
+
+
 def main():
     """Run input command args"""
     import argparse

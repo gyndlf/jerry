@@ -2,8 +2,6 @@
 
 # Reinforcement learning to play connect 4
 import logging
-import logging.config
-logging.config.fileConfig("logging.conf")
 log = logging.getLogger(__name__)
 
 from Board import Board
@@ -18,8 +16,6 @@ import Database
 #  - Add visual element
 #  - Change network to convolution to detect patterns
 
-NUM_CREATURES = 200       # Multiple of 4
-NUM_GENERATIONS = 1001  # Do over 10 as to save final.
 SAVE_EVERY_GEN = 10  # Save every 10 generations
 
 DATA_FILE = "data.json"
@@ -84,43 +80,45 @@ def run_group(creatures, id):
         raise Exception("Umm... How did you get here")
 
 
-assert NUM_CREATURES % 4 == 0
-num_groups = NUM_CREATURES // 4
-C = new_creatures(NUM_CREATURES)
+def run_generations(C, gens):
+    """Run 'gens' generations for creatures C"""
+    num = len(C)
+    assert num % 4 == 0
+    num_groups = num // 4
 
-data = {"prop": []}  # Time series cool stuff
+    data = {"prop": []}  # Time series cool stuff
 
-for generation in range(NUM_GENERATIONS):
-    winners = []  # Leave as are
-    born = []  # Likewise leave as are
-    mutate = []  # Mutate
-    log.info(f"Generation {generation}")
-    # Do the generation
-    for grp in range(num_groups):  # Creature indexes of g, g+1, g+2 and g+3
-        log.debug(f"Group {grp}")
-        winner, second, born1, born2 = run_group(C, grp)
-        winners.append(winner)
-        mutate.append(second)
-        born.extend([born1, born2])
+    for generation in range(gens):
+        winners = []  # Leave as are
+        born = []  # Likewise leave as are
+        mutate = []  # Mutate
+        log.info(f"Generation {generation}")
+        # Do the generation
+        for grp in range(num_groups):  # Creature indexes of g, g+1, g+2 and g+3
+            log.debug(f"Group {grp}")
+            winner, second, born1, born2 = run_group(C, grp)
+            winners.append(winner)
+            mutate.append(second)
+            born.extend([born1, born2])
 
-    for c in mutate:
-        c.mutate()  # Mutate all the creatures
+        for c in mutate:
+            c.mutate()  # Mutate all the creatures
 
-    species = defaultdict(int)  # Dict of generation species makeup
-    for creat in winners + born + mutate:
-        species[creat.species] += 1
+        species = defaultdict(int)  # Dict of generation species makeup
+        for creat in winners + born + mutate:
+            species[creat.species] += 1
 
-    p = {k: v / NUM_CREATURES for k, v in species.items()}
-    data["prop"].append(p)
-    log.info(p)
-    # Move the generation on
-    C = winners + born + mutate
-    random.shuffle(C)
+        p = {k: v / num for k, v in species.items()}
+        data["prop"].append(p)
+        log.info(p)
+        # Move the generation on
+        C = winners + born + mutate
+        random.shuffle(C)
 
-    if generation % SAVE_EVERY_GEN == 0:
-        # Save the stuff.
-        Database.save_creatures(C, generation)
+        if generation % SAVE_EVERY_GEN == 0:
+            # Save the stuff.
+            Database.save_creatures(C, generation)
 
-# Save the data
-with open(DATA_FILE, "w") as f:
-    json.dump(data, f, indent=4)
+    # Save the data
+    with open(DATA_FILE, "w") as f:
+        json.dump(data, f, indent=4)

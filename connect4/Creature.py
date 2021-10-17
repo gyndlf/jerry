@@ -19,6 +19,7 @@ def new_creatures(num=100):
     cs = []
     for i in range(num):
         cs.append(Creature())
+    log.info(f"Created {num} new creatures")
     return cs
 
 

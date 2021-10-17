@@ -55,3 +55,44 @@ def retrieve_creature(uid):
     conn.close()
     log.info(f"Retrieved {uid} from {FILENAME}")
     return pickle.loads(creature[0])
+
+
+def retrieve_last():
+    """Retrieve the last creature saved"""
+    conn = sqlite3.connect(FILENAME)
+    cur = conn.cursor()
+    creature = cur.execute("SELECT uid FROM creatures ORDER BY generation DESC LIMIT 1;").fetchone()
+    conn.commit()
+    conn.close()
+    return creature[0]
+
+
+def main():
+    """Run input command args"""
+    import argparse
+    parser = argparse.ArgumentParser(description="Database functions")
+    parser.add_argument(
+        "method", type=str, help="Method to run", choices=["clear", "create", "fetch"]
+    )
+    parser.add_argument(
+        "-db", type=str, required=False, default=FILENAME, help=f"Database file to use [{FILENAME}]"
+    )
+    args = parser.parse_args()
+
+    db = args.db
+    method = args.method
+    if method == "clear":
+        clear_db()
+        print("Cleared database.")
+    elif method == "create":
+        create_db()
+        print("Created database.")
+    elif method == "fetch":
+        print("Fetch last uid")
+        print(retrieve_last())
+    else:
+        print("Unknown method")
+
+
+if __name__ == '__main__':
+    main()

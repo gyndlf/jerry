@@ -37,8 +37,10 @@ class Human(Creature):
 if __name__ == '__main__':
     print("Beginning game.")
 
-    uid = input("Enter uid for creature in db")
+    uid = input("Enter uid for creature in db (? for latest): ")
     assert type(uid) == str
+    if uid == "?":
+        uid = Database.retrieve_last()
     creature = Database.retrieve_creature(uid)
 
     if np.random.rand() < 0.5:

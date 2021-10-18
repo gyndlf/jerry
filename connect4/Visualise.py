@@ -47,7 +47,7 @@ def plot_net(dna):
 
 
 if __name__ == '__main__':
-    plot_composition()
+    plot_composition(save=True)
 
 
 

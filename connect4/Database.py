@@ -136,7 +136,7 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description="Database functions")
     parser.add_argument(
-        "method", type=str, help="Method to run", choices=["clear", "create", "fetch"]
+        "method", type=str, help="Method to run", choices=["clear", "create", "fetch", "prune"]
     )
     parser.add_argument(
         "-db", type=str, required=False, default=FILENAME, help=f"Database file to use [{FILENAME}]"
@@ -154,6 +154,9 @@ def main():
     elif method == "fetch":
         print("Fetch last uid")
         print(retrieve_last())
+    elif method == "prune":
+        print("Pruning database.")
+        prune_db()
     else:
         print("Unknown method")
 

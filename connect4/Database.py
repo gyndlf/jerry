@@ -10,23 +10,39 @@ log = logging.getLogger(__name__)
 
 FILENAME = "evolution.db"
 
+"""
+Database contents:
+- creatures
+    All creatures saved over the generations. Their generation, uid, class and species are stored
+- history
+    History of the training progress. Stored generation, train time, and species composition
+"""
+
 
 def create_db():
-    """Create the databse."""
+    """Create the database."""
     conn = sqlite3.connect(FILENAME)
     cur = conn.cursor()
-    log.info("Creating creatures table in db")
-    cur.execute("CREATE TABLE creatures (generation INT, uid TEXT, species TEXT, pickle TEXT)")
+    log.info("Creating creatures and history table in db")
+    log.warning("Could break if already exists")
+    cur.execute("CREATE TABLE creatures (generation INT, uid TEXT, species TEXT, pickle TEXT);")
+    cur.execute("CREATE TABLE history (generation INT, time FLOAT, comp TEXT);")
     conn.commit()
     conn.close()
+
+
+def prune_db():
+    """Prune the database of all generations except the last one"""
+    ...
 
 
 def clear_db():
     """Clear the database (Reset)"""
     conn = sqlite3.connect(FILENAME)
     cur = conn.cursor()
-    log.warning(f"Clearing database creatures in {FILENAME}")
+    log.warning(f"Clearing database of creatures and history in {FILENAME}")
     cur.execute("DELETE FROM creatures")
+    cur.execute("DELETE FROM history")
     conn.commit()
     conn.close()
 
@@ -44,6 +60,36 @@ def save_creatures(creatures, gen):
     log.info(f"Saved creatures into {FILENAME}")
     conn.commit()
     conn.close()
+
+
+def save_history(gen, time, composition):
+    """Save the snapshot to the history database"""
+    conn = sqlite3.connect(FILENAME)
+    cur = conn.cursor()
+    cur.execute("INSERT INTO history VALUES (?, ?, ?);", (gen, time, pickle.dumps(composition)))
+    log.debug(f"Saved history into {FILENAME}")
+    conn.commit()
+    conn.close()
+
+
+def retrieve_history():
+    """Retrieve the history of the training (raw)"""
+    conn = sqlite3.connect(FILENAME)
+    cur = conn.cursor()
+    creature = cur.execute("SELECT * FROM history;").fetchall()
+    log.info(f"Retrieved history from {FILENAME}")
+    conn.commit()
+    conn.close()
+    return creature
+
+
+def retrieve_compositions():
+    """Retrieve the compositions of trainings"""
+    data = retrieve_history()
+    comp = []
+    for snap in data:
+        comp.append(pickle.loads(snap[2]))
+    return comp
 
 
 def retrieve_creature(uid):
@@ -107,4 +153,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    #main()
+    ...

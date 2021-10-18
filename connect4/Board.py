@@ -5,7 +5,7 @@ import logging
 import numpy as np
 from scipy.signal import convolve2d
 from Creature import Creature
-import visualise
+import Visualise
 
 log = logging.getLogger(__name__)  # Inherits main config
 
@@ -26,7 +26,7 @@ class Game:
             log.debug(f"Round {rnd // 2} : {['1', '2'][turn]}\n{self.board.state}")
 
             if self.preview:
-                visualise.plot_board(self.board)
+                Visualise.plot_board(self.board)
 
             col = self.players[turn].next_move(self.board, turn+1)  # Get the column to place in
             self.board.place(turn+1, col)  # Place the piece

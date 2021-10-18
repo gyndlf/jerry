@@ -8,14 +8,19 @@ import pandas as pd
 import json
 import logging
 log = logging.getLogger(__name__)  # Inherits main config
+import Database
 
 
-def plot_composition(time_dict, stack=False):
+def plot_composition(stack=False, save=False):  # TODO: Change so that species that exist for 1 generation don't show
     """Plot the species composition over time"""
-    df = pd.DataFrame(time_dict)
+    data = Database.retrieve_compositions()
+    df = pd.DataFrame(data)
     df.plot.area(stacked=stack)
     plt.legend(loc='upper left')
-    plt.show()
+    if save:
+        plt.savefig("composition.png")
+    else:
+        plt.show()
 
 
 def plot_board(board, text=True):
@@ -42,17 +47,8 @@ def plot_net(dna):
 
 
 if __name__ == '__main__':
-    from Network import DNA
-    from Board import Board
+    plot_composition()
 
-    DATA_FILE = "data.json"
-
-    with open(DATA_FILE, "r") as f:
-        data = json.load(f)
-
-    plot_composition(data["prop"])
-    d = DNA()
-    plot_board(Board())
 
 
 

@@ -11,6 +11,7 @@ import random
 from collections import defaultdict
 import json
 import Database
+import time
 
 # TODO:
 #  - Add visual element
@@ -88,7 +89,8 @@ def run_generations(C, gens, genstart=0):
 
     data = {"prop": []}  # Time series cool stuff
 
-    for generation in range(genstart+1, gens+1):
+    for generation in range(genstart+1, genstart+gens+1):
+        tic = time.time()
         winners = []  # Leave as are
         born = []  # Likewise leave as are
         mutate = []  # Mutate
@@ -108,17 +110,16 @@ def run_generations(C, gens, genstart=0):
         for creat in winners + born + mutate:
             species[creat.species] += 1
 
-        p = {k: v / num for k, v in species.items()}
-        data["prop"].append(p)
-        log.info(p)
-        # Move the generation on
-        C = winners + born + mutate
-        random.shuffle(C)
-
         if generation % SAVE_EVERY_GEN == 0:
             # Save the stuff.
             Database.save_creatures(C, generation)
 
-    # Save the data
-    with open(DATA_FILE, "w") as f:
-        json.dump(data, f, indent=4)
+        # Save the history
+        composition = {k: v / num for k, v in species.items()}
+        toc = time.time()-tic
+        Database.save_history(generation, toc, composition)
+        log.info(f"Took {toc.__round__(2)}s: {composition}")
+
+        # Move the generation on
+        C = winners + born + mutate
+        random.shuffle(C)

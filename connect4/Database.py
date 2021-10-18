@@ -31,7 +31,7 @@ def create_db():
     conn.close()
 
 
-def prune_db():
+def prune_db():  # TODO: Make it so you keep one per generation
     """Prune the database of all generations except the last one"""
     conn = sqlite3.connect(FILENAME)
     cur = conn.cursor()

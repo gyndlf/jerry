@@ -33,7 +33,13 @@ def create_db():
 
 def prune_db():
     """Prune the database of all generations except the last one"""
-    ...
+    conn = sqlite3.connect(FILENAME)
+    cur = conn.cursor()
+    gen = cur.execute("SELECT MAX(generation) FROM creatures;").fetchone()[0]
+    cur.execute("DELETE FROM creatures WHERE generation IS NOT ?", (gen,))
+    conn.commit()
+    conn.close()
+    log.warning(f"Pruned {FILENAME} of all generations except generation {gen}")
 
 
 def clear_db():
@@ -154,4 +160,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

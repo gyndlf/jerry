@@ -117,8 +117,8 @@ def run_generations(C, gens, genstart=0):
         # Save the history
         composition = {k: v / num for k, v in species.items()}
         toc = time.time()-tic
-        Database.save_history(generation, toc, composition)
         log.info(f"Took {toc.__round__(2)}s: {composition}")
+        Database.save_history(generation, toc, composition)
 
         # Move the generation on
         C = winners + born + mutate

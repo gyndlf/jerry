@@ -29,10 +29,12 @@ if __name__ == '__main__':
     log.info(f"Running {args.gens} generations")
     if args.new:
         # Start a new generation
+        Database.clear_db()
         creatures = Creature.new_creatures(args.size)
         Generation.run_generations(creatures, args.gens)
     else:
         # Load the last generation
         log.warning(f"Assuming creatures exist in the database")
         lastgen, creatures = Database.retrieve_last_gen()
+        Database.prune_db()
         Generation.run_generations(creatures, args.gens, genstart=lastgen)

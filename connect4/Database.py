@@ -44,12 +44,12 @@ def prune_db():  # TODO: Make it so you keep one per generation
 
 def clear_db():
     """Clear the database (Reset)"""
-    conn = sqlite3.connect(FILENAME)
+    conn = sqlite3.connect(FILENAME, isolation_level=None)
     cur = conn.cursor()
     log.warning(f"Clearing database of creatures and history in {FILENAME}")
     cur.execute("DELETE FROM creatures")
     cur.execute("DELETE FROM history")
-    cur.execute("vacuum;")  # Clear the cache
+    cur.execute("VACUUM;")  # Clear the cache
     conn.commit()
     conn.close()
 

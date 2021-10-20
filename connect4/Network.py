@@ -15,7 +15,7 @@ STRUCTURE
 - But MUST have a normal input of 6x7 and output of softmax 7x1.
 """
 
-INIT_SPECIES = ["K12", "I12", "J12"]
+INIT_SPECIES = ["JQ64", "KM64", "JJ64", "QJ64", "KJ64", "LQ64"]
 
 
 def new_wb(dims):

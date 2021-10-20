@@ -41,6 +41,7 @@ if __name__ == '__main__':
     assert type(uid) == str
     if uid == "?":
         uid = Database.retrieve_last()
+        print("Using uid of", uid)
     creature = Database.retrieve_creature(uid)
 
     if np.random.rand() < 0.5:

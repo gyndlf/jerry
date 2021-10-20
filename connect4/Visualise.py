@@ -11,14 +11,15 @@ log = logging.getLogger(__name__)  # Inherits main config
 import Database
 
 
-def plot_composition(stack=False, save=False):  # TODO: Change so that species that exist for 1 generation don't show
+def plot_composition(stack=False, save=False, legend=True):  # TODO: Change so that species that exist for 1 generation don't show
     """Plot the species composition over time"""
     data = Database.retrieve_compositions()
     df = pd.DataFrame(data)
     fig = plt.figure(figsize=(12,8))
     df.plot.area(stacked=stack)
-    plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15),
-          ncol=4, fancybox=True, shadow=True)
+    if legend:
+        plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15),
+            ncol=4, fancybox=True, shadow=True)
     plt.xlabel("Generation (num)")
     plt.ylabel("Frequency (%)")
     if save:
@@ -68,7 +69,7 @@ def plot_net(dna):
 
 
 if __name__ == '__main__':
-    plot_composition(save=True)
+    plot_composition(save=True, legend=False)
     plot_times(save=True)
 
 

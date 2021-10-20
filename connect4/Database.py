@@ -47,8 +47,8 @@ def clear_db():
     conn = sqlite3.connect(FILENAME, isolation_level=None)
     cur = conn.cursor()
     log.warning(f"Clearing database of creatures and history in {FILENAME}")
-    cur.execute("DELETE FROM creatures")
-    cur.execute("DELETE FROM history")
+    cur.execute("DELETE FROM creatures;")
+    cur.execute("DELETE FROM history;")
     cur.execute("VACUUM;")  # Clear the cache
     conn.commit()
     conn.close()

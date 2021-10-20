@@ -49,6 +49,7 @@ def clear_db():
     log.warning(f"Clearing database of creatures and history in {FILENAME}")
     cur.execute("DELETE FROM creatures")
     cur.execute("DELETE FROM history")
+    cur.execute("vacuum;")  # Clear the cache
     conn.commit()
     conn.close()
 

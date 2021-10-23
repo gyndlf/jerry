@@ -13,13 +13,15 @@ import Database
 
 def plot_composition(stack=False, save=False, legend=True):  # TODO: Change so that species that exist for 1 generation don't show
     """Plot the species composition over time"""
+    log.info("Plotting composition")
     data = Database.retrieve_compositions()
     df = pd.DataFrame(data)
     fig = plt.figure(figsize=(12,8))
-    df.plot.area(stacked=stack)
+    df.plot.area(stacked=stack, legend=False)
     if legend:
         plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15),
             ncol=4, fancybox=True, shadow=True)
+
     plt.xlabel("Generation (num)")
     plt.ylabel("Frequency (%)")
     if save:
@@ -30,6 +32,7 @@ def plot_composition(stack=False, save=False, legend=True):  # TODO: Change so t
 
 def plot_times(save=False):
     """Plot how long the training is taking"""
+    log.info("Plotting time compositions")
     data = Database.retrieve_history()
     times = []
     for snap in data:

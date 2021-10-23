@@ -37,6 +37,7 @@ def prune_db():  # TODO: Make it so you keep one per generation
     cur = conn.cursor()
     gen = cur.execute("SELECT MAX(generation) FROM creatures;").fetchone()[0]
     cur.execute("DELETE FROM creatures WHERE generation IS NOT ?", (gen,))
+    conn.commit()
     cur.execute("VACUUM;")  # Clear the cache
     conn.commit()
     conn.close()
